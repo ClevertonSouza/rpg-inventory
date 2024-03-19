@@ -5,26 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import axios from '@/lib/api/axios';
 
-type ItemProps = {
-    item: Item;
-}
-
-type Item = {
-    id: number;
-    name: string;
-    value: number;
-    weight: number;
-    quantity: number;
-}
-
-export default function ShopPage({ item }: ItemProps) {
-    const [items, setItems] = useState<Item[]>([]);
+export default function ShopPage() {
 
     useEffect(() => {
         const fetchItems = async () => {
             try {
                 const response = await axios.get('/shop/items');
-                setItems(response.data);
             } catch (error) {
                 console.error('Erro ao buscar itens:', error);
             }
