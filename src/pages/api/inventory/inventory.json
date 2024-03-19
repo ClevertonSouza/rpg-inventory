@@ -1,0 +1,42 @@
+{
+    "weapons": [
+        {
+            "id": "6c43b85c-1de6-452b-8cdf-06a5c3b3798a",
+            "name": "Espada",
+            "price": 100,
+            "spaces": 1,
+            "category": "Arma"
+        },
+        {
+            "id": "6c43b85c-1de6-452b-8cdf-06a5c3b3798a",
+            "name": "Espada",
+            "price": 100,
+            "spaces": 1,
+            "category": "Arma"
+        },
+        {
+            "id": "6c43b85c-1de6-452b-8cdf-06a5c3b3798a",
+            "name": "Espada",
+            "price": 100,
+            "spaces": 1,
+            "category": "Arma"
+        },
+        {
+            "id": "6c43b85c-1de6-452b-8cdf-06a5c3b3798a",
+            "name": "Espada",
+            "price": 100,
+            "spaces": 1,
+            "category": "Arma"
+        }
+    ],
+    "generalItems": [
+        {
+            "id": "e88a58a0-2284-4b62-adab-35fed0c5a4fb",
+            "name": "Pão",
+            "price": 10,
+            "spaces": 1,
+            "category": "Comida"
+        }
+    ],
+    "armor": []
+}
