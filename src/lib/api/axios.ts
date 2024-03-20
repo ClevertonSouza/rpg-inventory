@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://rpg-inventory.vercel.app/api',
+  baseURL: process.env.APP_URL,
   headers: {
     'Content-Type': 'application/json',
   },

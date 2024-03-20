@@ -1,25 +1,23 @@
-import axios from "axios";
+import prisma from "@/lib/database/database";
 import { NextApiRequest, NextApiResponse } from "next";
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  name: yup.string().required('O nome é obrigatório'),
-  price: yup.number().positive('O valor deve ser positivo').required('O valor é obrigatório'),
-  space: yup.number().positive('O espaço deve ser positivo').required('O espaço é obrigatório'),
-  category: yup.string().required('A categoria deve ser positiva'),
+    name: yup.string().required('O nome é obrigatório'),
+    price: yup.number().positive('O valor deve ser positivo').required('O valor é obrigatório'),
+    spaces: yup.number().positive('O espaço deve ser positivo').required('O espaço é obrigatório'),
+    category: yup.string().required('A categoria deve ser positiva'),
 });
 
 export default async function (req: NextApiRequest, res: NextApiResponse) {
     try {
         await schema.validate(req.body, { abortEarly: false });
 
-        const { name, price, space, category } = req.body;
-        await axios.post('/itensGerais', {
-            name,
-            price: String(price),
-            space: String(space),
-            category,
+        const result = await prisma.item.create({
+            data: req.body,
         });
+
+        console.log(result);
 
         return res.status(201).json({});
     } catch (error) {

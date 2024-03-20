@@ -22,13 +22,13 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
                             {errors.itemName && <span>Este campo é obrigatório</span>}
                         </div>
                         <div className="w-auto">
-                            <Label htmlFor="itemValue" className="mt-4">Valor do Item (T$)</Label>
-                            <Input id="itemValue" {...register("value", { required: true })} type="text" placeholder="Ex: 1.000,00" />
+                            <Label htmlFor="itemPrice" className="mt-4">Preço do Item (T$)</Label>
+                            <Input id="itemPrice" {...register("price", { required: true })} type="text" placeholder="Ex: 1.000,00" />
                             {errors.itemValue && <span>Este campo é obrigatório e deve seguir o formato R$ 1.000,00</span>}
                         </div>
                         <div className="w-auto">
-                            <Label htmlFor="itemWeight" className="mt-4">Peso do Item</Label>
-                            <Input id="itemWeight" {...register("weight", { required: true })} type="number" placeholder="Digite o peso do item" />
+                            <Label htmlFor="itemSpaces" className="mt-4">Peso do Item</Label>
+                            <Input id="itemSpaces" {...register("spaces", { required: true })} type="number" placeholder="Digite os espaços do item" />
                             {errors.itemWeight && <span>Este campo é obrigatório</span>}
                         </div>
                         <div className="w-auto">
@@ -37,9 +37,9 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
                             {errors.itemQuantity && <span>Este campo é obrigatório</span>}
                         </div>
                         <div className="w-auto">
-                            <Label htmlFor="itemQuantity" className="mt-4">Category</Label>
-                            <Input id="itemQuantity" {...register("quantity", { required: true })} type="number" placeholder="Digite a quantidade do item" />
-                            {errors.itemQuantity && <span>Este campo é obrigatório</span>}
+                            <Label htmlFor="itemCategory" className="mt-4">Category</Label>
+                            <Input id="itemCategory" {...register("category", { required: true })} type="text" placeholder="Digite a categoria do item" />
+                            {errors.itemCategory && <span>Este campo é obrigatório</span>}
                         </div>
                         <div className="w-full">
                             <Label htmlFor="itemTag" className="mt-4">Tag do Item</Label>

@@ -57,7 +57,7 @@ export default function Dashboard() {
 
   const onSubmit = async (data: any) => {
     try {
-      const response = await axios.post('/inventory/create', data);
+      const response = await axios.post('/api/inventory/create', data);
       console.log('response', response);
       setUpdate(!update);
       reset();
@@ -79,7 +79,6 @@ export default function Dashboard() {
             </Card>
             <Card className="flex items-center justify-center p-6">
               <div className="space-y-2 text-center">
-
                 <CardTitle className="text-2xl font-bold">{'T$ ' + (totalValue > 0 ? totalValue.toFixed(2).replace('.', ',') : '0,00')}</CardTitle>
                 <CardDescription className="text-sm font-medium shrink-0/100">Items Value</CardDescription>
               </div>

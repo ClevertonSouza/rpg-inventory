@@ -1,5 +1,7 @@
-import Dashboard from "./app/dashboard/page";
+import LoginScreen from "./auth/page";
+
+export const runtime = "nodejs";
 
 export default function Home() {
-  return <Dashboard />;
+  return <LoginScreen />;
 }
