@@ -11,9 +11,9 @@ import { register as registerUser } from '@/actions/auth/register';
 import { useRouter } from "next/navigation";
 
 
-const register = () => {
-    const router = useRouter();
+const Register = () => {
     const { register, handleSubmit } = useForm();
+    const router = useRouter();
 
     const onSubmit = async (values: any) => {
         const res = await registerUser(values);
@@ -44,4 +44,4 @@ const register = () => {
     )
 }
 
-export default register;
+export default Register;
