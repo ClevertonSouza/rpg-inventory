@@ -23,7 +23,7 @@ const UploadFileDialog: React.FC<UploadFileDialogProps> = ({isOpen, setIsOpen}) 
     formData.set('file', file);
 
     try {
-      await fetch('/api/inventory/uploadInventory', {
+      await fetch('/api/inventory', {
         method: 'POST',
         body: formData,
       });
