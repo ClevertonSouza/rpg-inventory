@@ -53,6 +53,7 @@ model User {
   accounts       Account[]
   sessions       Session[]
   authenticators Authenticator[]
+  playerTokens   PlayerToken[]
 
   @@map("users")
 }
@@ -102,4 +103,7 @@ model PlayerToken {
   id    String @id @default(cuid()) @map("_id")
   token String
   items Item[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }

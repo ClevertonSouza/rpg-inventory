@@ -12,7 +12,7 @@ export const login = async (values: any) => {
   }
 
   try {
-    const res = await signIn("credentials", {
+    await signIn("credentials", {
       email: values.email,
       password: values.password,
       redirectTo: DEFAULT_LOGIN_REDIRECT,
@@ -32,6 +32,4 @@ export const login = async (values: any) => {
       error: "Something went wrong!",
     };
   }
-
-  return {};
 };

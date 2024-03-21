@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react"; // Adicione useState ao import do React
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,16 +16,24 @@ import { FiGithub, FiLogIn, FiPackage } from "react-icons/fi";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 const LoginScreen = () => {
   const { register, handleSubmit } = useForm();
-  const [loading, setLoading] = useState(false); // Estado para controle de carregamento
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleLogin = async (values: any) => {
-    setLoading(true); // Inicia o carregamento
     const res = await login(values);
+    toast({
+      title: res.error ? "Erro ao realizar login" : "Login realizado com sucesso",
+      description: res.error ?? "Você foi cadastrado com sucesso",
+    });
     console.log(res);
-    setLoading(false); // Finaliza o carregamento
+    if (res.success) {
+      router.push("/app/dashboard");
+    }
   };
 
   return (
@@ -62,19 +70,15 @@ const LoginScreen = () => {
               placeholder="Senha"
               className="mb-4 w-full"
             />
-            <LoginButton className="flex justify-center items-center flex-col">
-              <Button className="mt-4 w-[250px]" onClick={handleLogin}>
-                {loading ? ( // Altera o conteúdo do botão baseado no estado de carregamento
-                  <span>Carregando...</span>
-                ) : (
-                  <span>
-                    <FiLogIn className="text-2xl mr-2" />
-                    Entrar
-                  </span>
-                )}
-              </Button>
+            <div className="flex justify-center items-center flex-col">
+              <LoginButton className="flex justify-center items-center flex-col">
+                <Button className="mt-4 w-[250px] gap-3" onClick={handleLogin}>
+                  <FiLogIn className="text-2xl mr-2" />
+                  Entrar
+                </Button>
+              </LoginButton>
               <Button
-                className="mt-4 w-[250px]"
+                className="mt-4 w-[250px] gap-3"
                 variant="secondary"
                 color="secondary"
                 size="lg"
@@ -83,7 +87,7 @@ const LoginScreen = () => {
                 <FiGithub className="text-2xl mr-2" />
                 Entrar com GitHub
               </Button>
-            </LoginButton>
+            </div>
           </form>
           <a href="/auth/register" className="text-center text-blue-500">
             Cadastrar
