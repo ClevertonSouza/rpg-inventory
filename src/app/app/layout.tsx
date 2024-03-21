@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { FiHome, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
+import { GiSwordsPower } from "react-icons/gi";
 import { usePathname } from "next/navigation";
 import SidebarLink from "@/components/Layout/SidebarLink";
 import {
@@ -15,11 +16,20 @@ import { downloadFile } from "@/common/helpers";
 
 import axios from "@/lib/api/axios";
 import UploadFileDialog from "@/components/dashboard/UploadFileDialog";
+import ComboToken from "@/components/shared/ComboToken";
+
+import { useRouter } from "next/navigation";
 
 const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
+  const [tokenValue, setTokenValue] = useState("")
+  const router = useRouter();
+
+  useEffect(() => {
+    router.refresh()
+  }, [tokenValue]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -77,6 +87,14 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
                 }}
                 active={isActive("/app/shop")}
               />
+              <SidebarLink
+                path={{
+                  href: "/app/playerTokens",
+                  icon: GiSwordsPower,
+                  label: "Tokens",
+                }}
+                active={isActive("/app/playerTokens")}
+              />
             </nav>
           </div>
           <footer className="flex items-center justify-center justify-between h-14 lg:h-[60px] border-t bg-gray-100/40 px-6 dark:bg-gray-800/40">
@@ -120,6 +138,7 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
               Home
             </h1>
           </div>
+          <ComboToken value={tokenValue} setValue={setTokenValue} />
         </header>
         {children}
       </div>

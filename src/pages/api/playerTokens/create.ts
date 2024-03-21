@@ -11,7 +11,7 @@ export default async function (req: NextApiRequest, res: NextApiResponse) {
   const { token } = req.body;
 
   try {
-    await schema.validate(token);
+    await schema.validate({ token });
 
     await prisma.playerToken.create({
       data: {

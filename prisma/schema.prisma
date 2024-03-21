@@ -92,5 +92,14 @@ model Item {
   tags     String
   quantity String
 
+  playerToken   PlayerToken? @relation(fields: [playerTokenId], references: [id], onDelete: Cascade)
+  playerTokenId String?
+
   @@map("items")
+}
+
+model PlayerToken {
+  id    String @id @default(cuid()) @map("_id")
+  token String
+  items Item[]
 }

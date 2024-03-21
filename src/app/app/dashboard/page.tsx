@@ -45,7 +45,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axios.get("/inventory/list");
+        const response = await axios.get("/api/inventory/list");
         setWeaponsList(response.data.weapons);
         setArmorList(response.data.armor);
         setGeneralItemsList(response.data.generalItems);
