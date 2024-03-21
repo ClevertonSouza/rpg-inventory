@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useRouter } from "next/navigation";
 
@@ -9,15 +9,16 @@ interface LoginButtonProps {
 }
 
 export const LoginButton = ({ children, className }: LoginButtonProps) => {
-    const router = useRouter();
+  const router = useRouter();
 
-    const onClick = () => {
-        router.push('/app/dashboard');
-        console.log('login button clicked');
-    }
-    
+  const onClick = () => {
+    router.push("/app/dashboard");
+    console.log("login button clicked");
+  };
+
   return (
-    <a onClick={onClick} className={className}>{children}</a>
+    <a onClick={onClick} className={className}>
+      {children}
+    </a>
   );
 };
-

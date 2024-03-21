@@ -1,43 +1,42 @@
-import type { NextAuthConfig } from 'next-auth';
-import GitHub from "next-auth/providers/github"
-import Credentials from "next-auth/providers/credentials"
-import prisma from './lib/database/database';
+import type { NextAuthConfig } from "next-auth";
+import GitHub from "next-auth/providers/github";
+import Credentials from "next-auth/providers/credentials";
+import prisma from "./lib/database/database";
 
 import bcrypt from "bcryptjs";
 
 export const authConfig = {
-    providers: [
-        GitHub({
-            clientId: process.env.GITHUB_ID,
-            clientSecret: process.env.GITHUB_SECRET,
-        }),
-        Credentials({
-            async authorize(credentials: Partial<Record<string, unknown>>) {
-                const { email, password } = credentials;
+  providers: [
+    GitHub({
+      clientId: process.env.GITHUB_ID,
+      clientSecret: process.env.GITHUB_SECRET,
+    }),
+    Credentials({
+      async authorize(credentials: Partial<Record<string, unknown>>) {
+        const { email, password } = credentials;
 
-                if (!email || !password) {
-                    return null;
-                }
-                
-                const user = await prisma.user.findUnique({
-                    where: {
-                        email: String(email)
-                    }
-                });
+        if (!email || !password) {
+          return null;
+        }
 
-                if (!user) {
-                    return null;
-                }
+        const user = await prisma.user.findUnique({
+          where: {
+            email: String(email),
+          },
+        });
 
-                const isValid = await bcrypt.compare(String(password), user.password);
+        if (!user) {
+          return null;
+        }
 
-                if (isValid) {
-                    return user;
-                }
+        const isValid = await bcrypt.compare(String(password), user.password);
 
-                return null;
-            }
-        })
-    ],
+        if (isValid) {
+          return user;
+        }
+
+        return null;
+      },
+    }),
+  ],
 } satisfies NextAuthConfig;
-
