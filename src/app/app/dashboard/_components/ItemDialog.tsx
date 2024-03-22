@@ -10,10 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { GeneralItems, InventoryItem } from "@/common/types";
+import { Item } from "@prisma/client";
 
 type ItemDialogProps = {
-  item: InventoryItem;
+  item: Item;
 };
 
 const ItemDialog: React.FC<ItemDialogProps> = ({ item }) => {
@@ -34,7 +34,7 @@ const ItemDialog: React.FC<ItemDialogProps> = ({ item }) => {
             Valor:{" "}
             {"T$ " +
               (item.price != null
-                ? item.price.toFixed(2).replace(".", ",")
+                ? Number(item.price).toFixed(2).replace(".", ",")
                 : "0,00")}
           </p>
           <p>Espaços: {item.spaces}</p>

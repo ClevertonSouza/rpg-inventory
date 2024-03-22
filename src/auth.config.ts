@@ -6,6 +6,17 @@ import prisma from "./lib/database/database";
 import bcrypt from "bcryptjs";
 
 export const authConfig = {
+  callbacks: {
+    async jwt({ token, user }) {
+      return token;
+    },
+    async session({ session, token }) {
+      if (token.sub && session.user) {
+        session.user.id = token.sub;
+      }
+      return session;
+    },
+  },
   providers: [
     GitHub({
       clientId: process.env.GITHUB_ID,

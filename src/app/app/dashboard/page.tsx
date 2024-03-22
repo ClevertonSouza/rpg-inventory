@@ -17,17 +17,18 @@ import {
 } from "@/components/ui/table";
 import { useEffect, useState } from "react";
 
-import axios from "@/lib/api/axios";
 import { useForm } from "react-hook-form";
-import ItemDialog from "../../../components/dashboard/ItemDialog";
+import ItemDialog from "./_components/ItemDialog";
 import { Armor, GeneralItems, Weapons } from "@/common/types";
-import NewItemForm from "@/components/dashboard/newItemForm";
+import NewItemForm from "@/app/app/dashboard/_components/newItemForm";
+import { getItemsByCategory } from "./actions";
+import { Item } from "@prisma/client";
 
 export default function Dashboard() {
-  const [weaponsList, setWeaponsList] = useState<Weapons[]>([] as Weapons[]);
-  const [armorList, setArmorList] = useState<Armor[]>([] as Armor[]);
-  const [generalItemsList, setGeneralItemsList] = useState<GeneralItems[]>(
-    [] as GeneralItems[],
+  const [weaponsList, setWeaponsList] = useState<Item[]>([] as Item[]);
+  const [armorList, setArmorList] = useState<Item[]>([] as Item[]);
+  const [generalItemsList, setGeneralItemsList] = useState<Item[]>(
+    [] as Item[],
   );
   const {
     register,
@@ -43,64 +44,56 @@ export default function Dashboard() {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    const fetchInventory = async () => {
-      try {
-        const response = await axios.get("/api/inventory/list");
-        setWeaponsList(response.data.weapons);
-        setArmorList(response.data.armor);
-        setGeneralItemsList(response.data.generalItems);
-      } catch (error) {
-        console.error("Erro ao buscar inventário:", error);
-      }
-    };
+    const fetchItems = async () => {
+      const weapons = await getItemsByCategory("weapons");
+      const armor = await getItemsByCategory("armor");
+      const general = await getItemsByCategory("general");
 
-    fetchInventory();
+      setWeaponsList(weapons?.data);
+      setArmorList(armor?.data);
+      setGeneralItemsList(general?.data);
+    }
+
+    fetchItems();
   }, [update]);
 
   useEffect(() => {
-    const weaponValue = weaponsList.reduce((acc, item) => acc + item.price, 0);
-    const armorValue = armorList.reduce((acc, item) => acc + item.price, 0);
+    const weaponValue = weaponsList.reduce((acc, item) => Number(acc) + Number(item.price), 0);
+    const armorValue = armorList.reduce((acc, item) => Number(acc) + Number(item.price), 0);
     const generalItemsValue = generalItemsList.reduce(
-      (acc, item) => acc + item.price,
+      (acc, item) => Number(acc) + Number(item.price),
       0,
     );
     setTotalValue(weaponValue + armorValue + generalItemsValue);
 
     const weaponSpaces = weaponsList.reduce(
-      (acc, item) => acc + item.spaces,
+      (acc, item) => Number(acc) + Number(item.spaces),
       0,
     );
-    const armorSpaces = armorList.reduce((acc, item) => acc + item.spaces, 0);
+    const armorSpaces = armorList.reduce((acc, item) => Number(acc) + Number(item.spaces), 0);
     const generalItemsSpaces = generalItemsList.reduce(
-      (acc, item) => acc + item.spaces,
+      (acc, item) => Number(acc) + Number(item.spaces),
       0,
     );
     setTotalSpaces(weaponSpaces + armorSpaces + generalItemsSpaces);
 
     const weaponQuantity = weaponsList.reduce(
-      (acc, item) => acc + item.quantity,
+      (acc, item) => Number(acc) + Number(item.quantity),
       0,
     );
     const armorQuantity = armorList.reduce(
-      (acc, item) => acc + item.quantity,
+      (acc, item) => Number(acc) + Number(item.quantity),
       0,
     );
     const generalItemsQuantity = generalItemsList.reduce(
-      (acc, item) => acc + item.quantity,
+      (acc, item) => Number(acc) + Number(item.quantity),
       0,
     );
     setTotalItems(weaponQuantity + armorQuantity + generalItemsQuantity);
   }, [weaponsList, armorList, generalItemsList]);
 
   const onSubmit = async (data: any) => {
-    try {
-      const response = await axios.post("/api/inventory/create", data);
-      console.log("response", response);
-      setUpdate(!update);
-      reset();
-    } catch (error) {
-      console.error("Erro ao adicionar item:", error);
-    }
+    // submite
   };
 
   return (
@@ -170,7 +163,7 @@ export default function Dashboard() {
                             <TableCell>
                               {"T$ " +
                                 (item.price != null
-                                  ? item.price.toFixed(2).replace(".", ",")
+                                  ? Number(item.price).toFixed(2).replace(".", ",")
                                   : "0,00")}
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
@@ -210,7 +203,7 @@ export default function Dashboard() {
                             <TableCell>
                               {"T$ " +
                                 (item.price != null
-                                  ? item.price.toFixed(2).replace(".", ",")
+                                  ? Number(item.price).toFixed(2).replace(".", ",")
                                   : "0,00")}
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
@@ -250,7 +243,7 @@ export default function Dashboard() {
                             <TableCell>
                               {"T$ " +
                                 (item.price != null
-                                  ? item.price.toFixed(2).replace(".", ",")
+                                  ? Number(item.price).toFixed(2).replace(".", ",")
                                   : "0,00")}
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>

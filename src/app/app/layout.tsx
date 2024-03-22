@@ -5,7 +5,7 @@ import React, { PropsWithChildren, useEffect, useState } from "react";
 import { FiHome, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
 import { GiSwordsPower } from "react-icons/gi";
 import { usePathname } from "next/navigation";
-import SidebarLink from "@/components/Layout/SidebarLink";
+import SidebarLink from "@/app/app/_components/SidebarLink";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import {
 import { downloadFile } from "@/common/helpers";
 
 import axios from "@/lib/api/axios";
-import UploadFileDialog from "@/components/dashboard/UploadFileDialog";
+import UploadFileDialog from "@/app/app/dashboard/_components/UploadFileDialog";
 import ComboToken from "@/components/shared/ComboToken";
 
 import { useRouter } from "next/navigation";
@@ -41,12 +41,6 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
 
   const handleDownloadJson = async () => {
     const response = await axios.get("/inventory/list");
-
-    downloadFile({
-      data: JSON.stringify(response.data),
-      fileName: "inventory.json",
-      fileType: "application/json",
-    });
   };
 
   return (

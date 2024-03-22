@@ -38,5 +38,7 @@ export type InventoryItem = Weapons | GeneralItems | Armor;
 export type PlayerToken = {
   id: string;
   token: string;
+  userId: string;
 };
 
+export type ItemCategory = "weapons" | "general" | "armor";

@@ -9,8 +9,8 @@ import {
   CardDescription,
   CardContent,
 } from "@/components/ui/card";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
+import { Input } from "../../../../components/ui/input";
+import { Button } from "../../../../components/ui/button";
 
 const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
   return (

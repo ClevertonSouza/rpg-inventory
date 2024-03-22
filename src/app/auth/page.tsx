@@ -10,7 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { LoginButton } from "@/components/auth/loginButton";
+import { LoginButton } from "@/app/auth/_components/loginButton";
 import { login } from "@/actions/auth/login";
 import { FiGithub, FiLogIn, FiPackage } from "react-icons/fi";
 import { Input } from "@/components/ui/input";

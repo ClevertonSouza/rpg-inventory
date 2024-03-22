@@ -21,8 +21,11 @@ import axios from "@/lib/api/axios";
 import { useForm } from "react-hook-form";
 
 import { PlayerToken } from "@/common/types";
-import NewTokenForm from "@/components/playerTokens/newTokenForm";
+import NewTokenForm from "@/app/app/playerTokens/_components/newTokenForm";
 import { useToast } from "@/components/ui/use-toast";
+import { useSession } from "next-auth/react";
+import { createPlayerToken, listAllPlayerTokens } from "./actions";
+
 
 export default function PlayerTokens() {
   const {
@@ -35,12 +38,13 @@ export default function PlayerTokens() {
 
   const [playerTokens, setPlayerTokens] = useState<PlayerToken[]>([]);
   const [update, setUpdate] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchTokens = async () => {
       try {
-        const response = await axios.get("/api/playerTokens/list");
-        setPlayerTokens(response.data);
+        const { data } = await listAllPlayerTokens();
+        setPlayerTokens(data);
       } catch (error) {
         console.error("Erro ao buscar inventário:", error);
       }
@@ -49,15 +53,15 @@ export default function PlayerTokens() {
     fetchTokens();
   }, [update]);
 
-  const onSubmit = async (PlayerToken: Omit<PlayerToken, "id">) => {
+  const onSubmit = async (playerToken: Omit<PlayerToken, "id">) => {
     try {
-      const response = await axios.post("/api/playerTokens/create", PlayerToken);
-      console.log("response", response);
+      const response = await createPlayerToken(playerToken);
+
       setUpdate(!update);
       reset();
       toast({
         title: "Token criado",
-        description: response.status === 200 ? "Token criado com sucesso" : "Erro ao criar token",
+        description: response?.success ? "Token criado com sucesso" : "Erro ao criar token",
       });
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
@@ -89,7 +93,7 @@ export default function PlayerTokens() {
                           <TableRow key={index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{token.token}</TableCell>
-                            </TableRow>
+                          </TableRow>
                         ))}
                     </TableBody>
                   </Table>
