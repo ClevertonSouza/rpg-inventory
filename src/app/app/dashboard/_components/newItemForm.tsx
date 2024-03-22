@@ -1,7 +1,7 @@
 "use client";
 
 import { Label } from "@radix-ui/react-label";
-import React from "react";
+import React, { useState } from "react";
 import {
   Card,
   CardHeader,
@@ -11,8 +11,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
+import ComboBox from "@/components/shared/ComboBox";
+import { categoryOptions } from "../categoryOptions";
+import { Controller } from "react-hook-form";
 
-const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
+const NewItemForm = ({ onSubmit, handleSubmit, register, errors, control }: any) => {
   return (
     <Card className="flex flex-col">
       <CardHeader className="pb-4">
@@ -23,7 +26,7 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex flex-row gap-4 flex-wrap">
             <div className="w-full">
-              <Label htmlFor="itemName" className="mt-4">
+              <Label htmlFor="itemName">
                 Nome do Item
               </Label>
               <Input
@@ -34,7 +37,7 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
               {errors.itemName && <span>Este campo é obrigatório</span>}
             </div>
             <div className="w-auto">
-              <Label htmlFor="itemPrice" className="mt-4">
+              <Label htmlFor="itemPrice">
                 Preço do Item (T$)
               </Label>
               <Input
@@ -50,7 +53,7 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
               )}
             </div>
             <div className="w-auto">
-              <Label htmlFor="itemSpaces" className="mt-4">
+              <Label htmlFor="itemSpaces">
                 Peso do Item
               </Label>
               <Input
@@ -62,7 +65,7 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
               {errors.itemWeight && <span>Este campo é obrigatório</span>}
             </div>
             <div className="w-auto">
-              <Label htmlFor="itemQuantity" className="mt-4">
+              <Label htmlFor="itemQuantity">
                 Quantidade do Item
               </Label>
               <Input
@@ -73,20 +76,26 @@ const NewItemForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
               />
               {errors.itemQuantity && <span>Este campo é obrigatório</span>}
             </div>
-            <div className="w-auto">
-              <Label htmlFor="itemCategory" className="mt-4">
+            <div className="flex flex-col gap-1 w-full">
+              <Label htmlFor="itemCategory">
                 Category
               </Label>
-              <Input
-                id="itemCategory"
-                {...register("category", { required: true })}
-                type="text"
-                placeholder="Digite a categoria do item"
+              <Controller
+                name="category"
+                control={control}
+                render={({ field }) => (
+                  <ComboBox
+                    {...field}
+                    value={field.value}
+                    setValue={field.onChange}
+                    options={categoryOptions}
+                  />
+                )}
               />
               {errors.itemCategory && <span>Este campo é obrigatório</span>}
             </div>
             <div className="w-full">
-              <Label htmlFor="itemTag" className="mt-4">
+              <Label htmlFor="itemTag">
                 Tag do Item
               </Label>
               <Input

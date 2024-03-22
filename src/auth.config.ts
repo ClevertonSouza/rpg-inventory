@@ -6,6 +6,14 @@ import prisma from "./lib/database/database";
 import bcrypt from "bcryptjs";
 
 export const authConfig = {
+  
+  pages: {
+    signIn: '/auth',
+    signOut: '/auth',
+    error: '/auth',
+    verifyRequest: '/auth',
+    newUser: '/app/dashboard',
+  },
   callbacks: {
     async jwt({ token, user }) {
       return token;

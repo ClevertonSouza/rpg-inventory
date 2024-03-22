@@ -4,6 +4,8 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
 
+import { PlayerTokenProvider } from '@/contexts/UserTokensContext';
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -21,7 +23,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <Toaster />
         <SessionProvider>
-          {children}
+          <PlayerTokenProvider>
+            {children}
+          </PlayerTokenProvider>
         </SessionProvider>
       </body>
     </html>

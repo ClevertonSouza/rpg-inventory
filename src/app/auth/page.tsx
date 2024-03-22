@@ -77,7 +77,7 @@ const LoginScreen = () => {
                   Entrar
                 </Button>
               </LoginButton>
-              <Button
+             {/*  <Button
                 className="mt-4 w-[250px] gap-3"
                 variant="secondary"
                 color="secondary"
@@ -86,7 +86,7 @@ const LoginScreen = () => {
               >
                 <FiGithub className="text-2xl mr-2" />
                 Entrar com GitHub
-              </Button>
+              </Button> */}
             </div>
           </form>
           <a href="/auth/register" className="text-center text-blue-500">

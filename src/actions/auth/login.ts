@@ -15,9 +15,7 @@ export const login = async (values: any) => {
     await signIn("credentials", {
       email: values.email,
       password: values.password,
-      redirectTo: DEFAULT_LOGIN_REDIRECT,
-    }).then((res) => {
-      console.log(res);
+      redirect: false,
     });
 
     return { success: "User logged in" };

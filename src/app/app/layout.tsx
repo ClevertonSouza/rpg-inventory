@@ -1,35 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import React, { PropsWithChildren, useEffect, useState } from "react";
-import { FiHome, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
+import React, { PropsWithChildren, useState } from "react";
+import { FiHome, FiLogOut, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
 import { GiSwordsPower } from "react-icons/gi";
 import { usePathname } from "next/navigation";
 import SidebarLink from "@/app/app/_components/SidebarLink";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { downloadFile } from "@/common/helpers";
-
-import axios from "@/lib/api/axios";
-import UploadFileDialog from "@/app/app/dashboard/_components/UploadFileDialog";
 import ComboToken from "@/components/shared/ComboToken";
 
-import { useRouter } from "next/navigation";
+import { usePlayerToken } from "@/contexts/UserTokensContext";
+import { signOut } from "next-auth/react";
 
 const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState(false);
-  const [tokenValue, setTokenValue] = useState("")
-  const router = useRouter();
-
-  useEffect(() => {
-    router.refresh()
-  }, [tokenValue]);
+  const { playerToken, setPlayerToken } = usePlayerToken();
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -37,10 +22,6 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
 
   const isActive = (path: string) => {
     return path === pathname;
-  };
-
-  const handleDownloadJson = async () => {
-    const response = await axios.get("/inventory/list");
   };
 
   return (
@@ -93,25 +74,7 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
           </div>
           <footer className="flex items-center justify-center justify-between h-14 lg:h-[60px] border-t bg-gray-100/40 px-6 dark:bg-gray-800/40">
             <p className="text-sm font-medium">© 2024 RPG Inventory</p>
-            <UploadFileDialog
-              isOpen={isUploadDialogOpen}
-              setIsOpen={setIsUploadDialogOpen}
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 p-3">
-                  <FiMenu className="w-6 h-6" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onSelect={handleDownloadJson}>
-                  Exportar JSON
-                </DropdownMenuItem>
-                <DropdownMenuItem onSelect={() => setIsUploadDialogOpen(true)}>
-                  Importar JSON
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <button onClick={() => signOut()} className="text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"><FiLogOut className="h-6 w-6" /></button>
           </footer>
         </div>
       </div>
@@ -132,7 +95,7 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
               Home
             </h1>
           </div>
-          <ComboToken value={tokenValue} setValue={setTokenValue} />
+          <ComboToken value={playerToken} setValue={setPlayerToken} />
         </header>
         {children}
       </div>

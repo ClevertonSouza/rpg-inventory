@@ -2,6 +2,7 @@
 
 import { ItemCategory } from "@/common/types";
 import prisma from "@/lib/database/database";
+import { Item } from "@prisma/client";
 
 export async function getAllItems() {
   try {
@@ -14,11 +15,12 @@ export async function getAllItems() {
   }
 }
 
-export async function getItemsByCategory(category: ItemCategory) {
+export async function getItemsByCategoryAndToken(category: ItemCategory, playerToken: string) {
   try {
     const response = await prisma.item.findMany({
       where: {
         category: category,
+        playerTokenId: playerToken,
       },
     });
     return {
@@ -29,6 +31,19 @@ export async function getItemsByCategory(category: ItemCategory) {
   }
   return {
     data: [],
+  }
+}
+
+export async function createItem(item: Item) {
+  try {
+    await prisma.item.create({
+      data: item,
+    });
+    return {
+      success: "Item created successfully",
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 

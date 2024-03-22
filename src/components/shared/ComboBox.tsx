@@ -20,21 +20,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { PlayerToken } from "@/common/types";
-import { listAllPlayerTokens } from "@/app/app/playerTokens/actions";
+type Options = {
+  id: string,
+  value: string,
+  label: string
+}
 
-const ComboToken = ({ value, setValue }: { value: string, setValue: (value: string) => void }) => {
+const ComboBox = ({ value, setValue, options }: { value: string, setValue: (value: string) => void, options: Options[] }) => {
   const [open, setOpen] = useState(false)
-  const [tokens, setTokens] = useState<PlayerToken[]>([]);
-
-  useEffect(() => {
-    const fetchTokens = async () => {
-      const response = await listAllPlayerTokens();
-      setTokens(response.data);
-    }
-
-    fetchTokens();
-  }, []);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -46,7 +39,7 @@ const ComboToken = ({ value, setValue }: { value: string, setValue: (value: stri
           className="w-[200px] justify-between"
         >
           {value
-            ? tokens.find((token) => token.id === value)?.token
+            ? options.find((option) => option.value === value)?.label
             : "Select token..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
@@ -57,10 +50,10 @@ const ComboToken = ({ value, setValue }: { value: string, setValue: (value: stri
           <CommandEmpty>No token found.</CommandEmpty>
           <CommandGroup>
             <CommandList>
-            {tokens.map((token) => (
+            {options.map((option) => (
               <CommandItem
-                key={token.id}
-                value={token.id}
+                key={option.id}
+                value={option.value}
                 onSelect={(currentValue) => {
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
@@ -69,10 +62,10 @@ const ComboToken = ({ value, setValue }: { value: string, setValue: (value: stri
                 <Check
                   className={cn(
                     "mr-2 h-4 w-4",
-                    value === token.id ? "opacity-100" : "opacity-0"
+                    value === option.value ? "opacity-100" : "opacity-0"
                   )}
                 />
-                {token.token}
+                {option.label}
               </CommandItem>
             ))}
             </CommandList>
@@ -83,4 +76,4 @@ const ComboToken = ({ value, setValue }: { value: string, setValue: (value: stri
   )
 }
 
-export default ComboToken;
+export default ComboBox;

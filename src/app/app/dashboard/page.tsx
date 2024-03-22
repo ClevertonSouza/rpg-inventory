@@ -19,10 +19,11 @@ import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import ItemDialog from "./_components/ItemDialog";
-import { Armor, GeneralItems, Weapons } from "@/common/types";
-import NewItemForm from "@/app/app/dashboard/_components/newItemForm";
-import { getItemsByCategory } from "./actions";
+import NewItemForm from "./_components/NewItemForm";
+import { createItem, getItemsByCategoryAndToken } from "./actions";
 import { Item } from "@prisma/client";
+import { toast } from "@/components/ui/use-toast";
+import { usePlayerToken } from "@/contexts/UserTokensContext";
 
 export default function Dashboard() {
   const [weaponsList, setWeaponsList] = useState<Item[]>([] as Item[]);
@@ -30,24 +31,20 @@ export default function Dashboard() {
   const [generalItemsList, setGeneralItemsList] = useState<Item[]>(
     [] as Item[],
   );
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm();
+
+  const { register, control, handleSubmit, reset, formState: { errors } } = useForm();
+  const { playerToken } = usePlayerToken();
 
   const [totalItems, setTotalItems] = useState(0);
   const [totalValue, setTotalValue] = useState(0);
   const [totalSpaces, setTotalSpaces] = useState(0);
-
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     const fetchItems = async () => {
-      const weapons = await getItemsByCategory("weapons");
-      const armor = await getItemsByCategory("armor");
-      const general = await getItemsByCategory("general");
+      const weapons = await getItemsByCategoryAndToken("weapons", playerToken);
+      const armor = await getItemsByCategoryAndToken("armor", playerToken);
+      const general = await getItemsByCategoryAndToken("general", playerToken);
 
       setWeaponsList(weapons?.data);
       setArmorList(armor?.data);
@@ -55,7 +52,7 @@ export default function Dashboard() {
     }
 
     fetchItems();
-  }, [update]);
+  }, [playerToken, update]);
 
   useEffect(() => {
     const weaponValue = weaponsList.reduce((acc, item) => Number(acc) + Number(item.price), 0);
@@ -92,8 +89,16 @@ export default function Dashboard() {
     setTotalItems(weaponQuantity + armorQuantity + generalItemsQuantity);
   }, [weaponsList, armorList, generalItemsList]);
 
-  const onSubmit = async (data: any) => {
-    // submite
+  const onSubmit = async (data: Item) => {
+    data.playerTokenId = playerToken;
+    const response = await createItem(data);
+    toast({
+      title: response?.success ? "Item created" : "Error",
+      description: response?.success ? "Item created successfully" : "Error creating item",
+    });
+
+    reset();
+    setUpdate(!update);
   };
 
   return (
@@ -262,6 +267,7 @@ export default function Dashboard() {
               onSubmit={onSubmit}
               handleSubmit={handleSubmit}
               register={register}
+              control={control}
               errors={errors}
             />
           </div>
