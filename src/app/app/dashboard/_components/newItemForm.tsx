@@ -1,7 +1,6 @@
-"use client";
 
-import { Label } from "@radix-ui/react-label";
 import React from "react";
+import { Label } from "@radix-ui/react-label";
 import {
   Card,
   CardHeader,
@@ -13,9 +12,17 @@ import { Input } from "../../../../components/ui/input";
 import { Button } from "../../../../components/ui/button";
 import ComboBox from "@/components/shared/ComboBox";
 import { categoryOptions } from "../categoryOptions";
-import { Controller } from "react-hook-form";
+import { Controller, SubmitHandler, UseFormHandleSubmit, UseFormRegister } from "react-hook-form";
 
-const NewItemForm = ({ onSubmit, handleSubmit, register, errors, control }: any) => {
+type NewItemFormProps = {
+  onSubmit: SubmitHandler<any>,
+  handleSubmit: UseFormHandleSubmit<any>,
+  register: UseFormRegister<any>,
+  errors: any,
+  control: any,
+}
+
+const NewItemForm: React.FC<NewItemFormProps> = ({ onSubmit, handleSubmit, register, errors, control }) => {
   return (
     <Card className="flex flex-col">
       <CardHeader className="pb-4">

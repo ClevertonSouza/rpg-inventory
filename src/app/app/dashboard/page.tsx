@@ -19,7 +19,7 @@ import { useEffect, useState } from "react";
 
 import { useForm } from "react-hook-form";
 import ItemDialog from "./_components/ItemDialog";
-import NewItemForm from "@/app/app/dashboard/_components/NewItemForm";
+import NewItemForm from "./_components/NewItemForm";
 import { createItem, getItemsByCategoryAndToken } from "./actions";
 import { Item } from "@prisma/client";
 import { toast } from "@/components/ui/use-toast";
