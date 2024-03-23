@@ -35,83 +35,81 @@ import {
 import ConfirmBuyDialog from "./ConfirmBuyDialog"
 import { buyShopItem } from "../actions"
 import { usePlayerToken } from "@/contexts/UserTokensContext"
-import { ShopItem } from "@/common/types"
-import { Label } from "@/components/ui/label"
-
-const handleBuy = (shopItem: ShopItem) => {
-  const { playerToken, tibars } = usePlayerToken();
-  buyShopItem(shopItem, { id: playerToken, tibars })
-}
-
-
-export const columns: ColumnDef<ShopItem>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => (
-      <Button
-        variant="ghost"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Nome
-        <ArrowUpDown className="ml-2 h-4 w-4" />
-      </Button>
-    ),
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("name")}</div>
-    ),
-  },
-  {
-    accessorKey: "spaces",
-    header: "Espaço",
-    cell: ({ row }) => <div className="lowercase">{row.getValue("spaces")}</div>,
-  },
-  {
-    accessorKey: "price",
-    header: "Preço",
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"))
-      return <div className="text-left font-medium w-24">T$ {amount.toFixed(2).replace('.', ',')}</div>
-    },
-  },
-  {
-    id: "actions",
-    header: "Ações",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <ConfirmBuyDialog onConfirm={() => handleBuy(row.original)} />
-      )
-    },
-  },
-]
+import { ShopItem } from "@/common/types" 
 
 export const DataTableShopItems = ({ data }: { data: ShopItem[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const { playerToken, tibars } = usePlayerToken();
+
+  const handleBuy = (shopItem: ShopItem) => {
+    buyShopItem(shopItem, { id: playerToken, tibars })
+  }
+
+  const columns: ColumnDef<ShopItem>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Nome
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("name")}</div>
+      ),
+    },
+    {
+      accessorKey: "spaces",
+      header: "Espaço",
+      cell: ({ row }) => <div className="lowercase">{row.getValue("spaces")}</div>,
+    },
+    {
+      accessorKey: "price",
+      header: "Preço",
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("price"))
+        return <div className="text-left font-medium w-24">T$ {amount.toFixed(2).replace('.', ',')}</div>
+      },
+    },
+    {
+      id: "actions",
+      header: "Ações",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <ConfirmBuyDialog onConfirm={() => handleBuy(row.original)} />
+        )
+      },
+    },
+  ]
 
   const table = useReactTable({
     data,

@@ -28,8 +28,8 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
       }
     };
 
-      fetchTibars();
-    }, [playerToken]);
+    fetchTibars();
+  }, [playerToken]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
