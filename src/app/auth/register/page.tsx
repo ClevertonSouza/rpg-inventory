@@ -28,6 +28,7 @@ const Register = () => {
     toast({
       title: res.error ? "Erro ao cadastrar" : "Cadastro realizado com sucesso",
       description: res.error ?? "Você foi cadastrado com sucesso",
+      variant: res.success ? "default" : "destructive",
     });
     if (res.success) {
       router.push("/auth");

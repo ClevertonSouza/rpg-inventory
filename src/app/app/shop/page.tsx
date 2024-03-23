@@ -16,13 +16,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import axios from "@/lib/api/axios";
+import { buyShopItem, getShopGeneralItems } from "./actions";
+import { ShopItem } from "@/common/types";
+import ConfirmBuyDialog from "./_components/ConfirmBuyDialog";
+import { usePlayerToken } from "@/contexts/UserTokensContext";
+import { toast } from "@/components/ui/use-toast";
 
 export default function ShopPage() {
+  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const response = await axios.get("/shop/items");
+        const { data } = await getShopGeneralItems();
+        setShopItems(data);
       } catch (error) {
         console.error("Erro ao buscar itens:", error);
       }
@@ -30,6 +37,16 @@ export default function ShopPage() {
 
     fetchItems();
   }, []);
+
+  const buyItem = async (item: ShopItem) => {
+    const { playerToken, tibars } = usePlayerToken();
+
+    const response = await buyShopItem(item, { id: playerToken, tibars: tibars });
+    toast({
+      description: response?.success ?? response?.error,
+      variant: response?.success ? "default" : "destructive",
+    });
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -48,18 +65,21 @@ export default function ShopPage() {
                     <TableHead>Item</TableHead>
                     <TableHead>Value</TableHead>
                     <TableHead>Weight</TableHead>
-                    <TableHead>Quantity</TableHead>
                     <TableHead>Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow>
-                    <TableCell>Item</TableCell>
-                    <TableCell>Teste</TableCell>
-                    <TableCell>Teste</TableCell>
-                    <TableCell>Teste</TableCell>
-                    <TableCell>Teste</TableCell>
-                  </TableRow>
+                  {shopItems.map((item, index) => (
+                    <TableRow key={item.id}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.spaces}</TableCell>
+                      <TableCell>
+                        <ConfirmBuyDialog onConfirm={() => buyItem(item)} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </CardContent>

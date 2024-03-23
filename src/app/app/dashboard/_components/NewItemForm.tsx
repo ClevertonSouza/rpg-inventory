@@ -66,8 +66,10 @@ const NewItemForm: React.FC<NewItemFormProps> = ({ onSubmit, handleSubmit, regis
               <Input
                 id="itemSpaces"
                 {...register("spaces", { required: true })}
-                type="number"
+                type="text"
+                pattern="[0-9]*([.,][0-9]+)?"
                 placeholder="Digite os espaços do item"
+                min={0}
               />
               {errors.itemWeight && <span>Este campo é obrigatório</span>}
             </div>
@@ -78,8 +80,10 @@ const NewItemForm: React.FC<NewItemFormProps> = ({ onSubmit, handleSubmit, regis
               <Input
                 id="itemQuantity"
                 {...register("quantity", { required: true })}
-                type="number"
+                type="text"
+                pattern="[0-9]*([.,][0-9]+)?"
                 placeholder="Digite a quantidade do item"
+                min={0}
               />
               {errors.itemQuantity && <span>Este campo é obrigatório</span>}
             </div>

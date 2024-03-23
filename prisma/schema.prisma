@@ -100,10 +100,11 @@ model Item {
 }
 
 model PlayerToken {
-  id    String @id @default(cuid()) @map("_id")
-  token String
-  items Item[]
+  id     String @id @default(cuid()) @map("_id")
+  token  String
+  tibars Float  @default(0)
+  items  Item[]
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
 }

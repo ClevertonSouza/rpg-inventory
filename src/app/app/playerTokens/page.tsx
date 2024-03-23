@@ -23,8 +23,9 @@ import { useForm } from "react-hook-form";
 import { PlayerToken } from "@/common/types";
 import NewTokenForm from "@/app/app/playerTokens/_components/newTokenForm";
 import { useToast } from "@/components/ui/use-toast";
-import { useSession } from "next-auth/react";
-import { createPlayerToken, listAllPlayerTokens } from "./actions";
+import { createPlayerToken, deletePlayerToken, listAllPlayerTokens } from "./actions";
+import { usePlayerToken } from "@/contexts/UserTokensContext";
+import RemoveItemDialog from "@/components/shared/RemoveItemDialog";
 
 
 export default function PlayerTokens() {
@@ -35,10 +36,9 @@ export default function PlayerTokens() {
     formState: { errors },
   } = useForm();
   const { toast } = useToast();
+  const { update, setUpdate } = usePlayerToken();
 
   const [playerTokens, setPlayerTokens] = useState<PlayerToken[]>([]);
-  const [update, setUpdate] = useState(false);
-  const { data: session } = useSession();
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -62,11 +62,22 @@ export default function PlayerTokens() {
       toast({
         title: "Token criado",
         description: response?.success ? "Token criado com sucesso" : "Erro ao criar token",
+        variant: response?.success ? "default" : "destructive",
       });
     } catch (error) {
       console.error("Erro ao adicionar item:", error);
     }
   };
+
+  const handleDeleteItem = async (token: PlayerToken) => {
+    const response = await deletePlayerToken(token.id);
+    toast({
+      title: "Token removido",
+      description: response?.success ? "Token removido com sucesso" : "Erro ao remover token",
+      variant: response?.success ? "default" : "destructive",
+    });
+    setUpdate(!update);
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -85,6 +96,7 @@ export default function PlayerTokens() {
                       <TableRow>
                         <TableHead className="w-10">#</TableHead>
                         <TableHead>name</TableHead>
+                        <TableHead className="w-10">actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -93,6 +105,9 @@ export default function PlayerTokens() {
                           <TableRow key={index}>
                             <TableCell>{index + 1}</TableCell>
                             <TableCell>{token.token}</TableCell>
+                            <TableCell className="flex items-center justify-center">
+                              <RemoveItemDialog onConfirm={() => handleDeleteItem(token)} />
+                            </TableCell>
                           </TableRow>
                         ))}
                     </TableBody>

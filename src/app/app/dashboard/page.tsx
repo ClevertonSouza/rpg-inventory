@@ -20,10 +20,12 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import ItemDialog from "./_components/ItemDialog";
 import NewItemForm from "./_components/NewItemForm";
-import { createItem, getItemsByCategoryAndToken } from "./actions";
+import { createItem, deleteItem, getItemsByCategoryAndToken } from "./actions";
 import { Item } from "@prisma/client";
 import { toast } from "@/components/ui/use-toast";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
+import { FiTrash2 } from "react-icons/fi";
+import RemoveItemDialog from "../../../components/shared/RemoveItemDialog";
 
 export default function Dashboard() {
   const [weaponsList, setWeaponsList] = useState<Item[]>([] as Item[]);
@@ -91,15 +93,36 @@ export default function Dashboard() {
 
   const onSubmit = async (data: Item) => {
     data.playerTokenId = playerToken;
+
+    if (!playerToken) {
+      toast({
+        title: "Error",
+        description: "Selecione um Token!",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const response = await createItem(data);
     toast({
       title: response?.success ? "Item created" : "Error",
       description: response?.success ? "Item created successfully" : "Error creating item",
+      variant: response?.success ? "default" : "destructive",
     });
 
     reset();
     setUpdate(!update);
   };
+
+  const handleDeleteItem = async (item: Item) => {
+    const response = await deleteItem(item.id);
+    toast({
+      title: response?.success ? "Item removed" : "Error",
+      description: response?.success ? "Item removed successfully" : "Error removing item",
+      variant: response?.success ? "default" : "destructive",
+    });
+    setUpdate(!update);
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -173,8 +196,9 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center">
+                            <TableCell className="flex justify-center items-center gap-2">
                               <ItemDialog item={item} />
+                              <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -213,8 +237,9 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center">
+                            <TableCell className="flex justify-center items-center gap-2">
                               <ItemDialog item={item} />
+                              <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>
                           </TableRow>
                         ))}
@@ -253,8 +278,9 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center">
+                            <TableCell className="flex justify-center items-center gap-2">
                               <ItemDialog item={item} />
+                              <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>
                           </TableRow>
                         ))}

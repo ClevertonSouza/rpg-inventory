@@ -33,11 +33,12 @@ export type Armor = {
   quantity: number;
 };
 
-export type InventoryItem = Weapons | GeneralItems | Armor;
+export type ShopItem = Weapons | GeneralItems | Armor;
 
 export type PlayerToken = {
   id: string;
   token: string;
+  tibars: number;
   userId: string;
 };
 

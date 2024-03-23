@@ -47,3 +47,15 @@ export async function createItem(item: Item) {
   }
 }
 
+export async function deleteItem(id: string) {
+  try {
+    await prisma.item.delete({
+      where: { id },
+    });
+    return {
+      success: "Item removed successfully",
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}

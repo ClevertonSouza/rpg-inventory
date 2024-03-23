@@ -22,10 +22,17 @@ import {
 
 import { PlayerToken } from "@/common/types";
 import { listAllPlayerTokens } from "@/app/app/playerTokens/actions";
+import { usePlayerToken } from "@/contexts/UserTokensContext";
 
-const ComboToken = ({ value, setValue }: { value: string, setValue: (value: string) => void }) => {
+type ComboTokenProps = {
+  value: string,
+  setValue: (value: string) => void,
+}
+
+const ComboToken = ({ value, setValue }: ComboTokenProps) => {
   const [open, setOpen] = useState(false)
   const [tokens, setTokens] = useState<PlayerToken[]>([]);
+  const { update } = usePlayerToken();
 
   useEffect(() => {
     const fetchTokens = async () => {
@@ -34,7 +41,7 @@ const ComboToken = ({ value, setValue }: { value: string, setValue: (value: stri
     }
 
     fetchTokens();
-  }, []);
+  }, [update]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

@@ -58,3 +58,31 @@ export async function listAllPlayerTokens() {
     data: [],
   };
 }
+
+export async function deletePlayerToken(id: string) {
+  try {
+    await prisma.playerToken.delete({
+      where: { id },
+    });
+    return {
+      success: "Player token removed successfully",
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export async function updatePlayerTibars(id: string, tibars: number) {
+  try {
+    await prisma.playerToken.update({
+      where: { id },
+      data: { tibars },
+    });
+    return {
+      success: "Player tibars updated successfully",
+    };
+  } catch (error) {
+    console.log(error);
+  }
+}
+

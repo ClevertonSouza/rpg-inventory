@@ -29,6 +29,7 @@ const LoginScreen = () => {
     toast({
       title: res.error ? "Erro ao realizar login" : "Login realizado com sucesso",
       description: res.error ?? "Você foi cadastrado com sucesso",
+      variant: res.success ? "default" : "destructive",
     });
     console.log(res);
     if (res.success) {

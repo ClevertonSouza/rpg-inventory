@@ -10,18 +10,35 @@ import ComboToken from "@/components/shared/ComboToken";
 
 import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { signOut } from "next-auth/react";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { updatePlayerTibars } from "./playerTokens/actions";
 
 const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-  const { playerToken, setPlayerToken } = usePlayerToken();
+  const { playerToken, setPlayerToken, tibars, setTibars } = usePlayerToken();
+  const [showTibarsInput, setShowTibarsInput] = useState(false);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
   };
 
+  const toggleTibarsInput = () => {
+    if (playerToken) {
+      setShowTibarsInput(!showTibarsInput);
+    }
+  };
+
   const isActive = (path: string) => {
     return path === pathname;
+  };
+
+  const changeTibars = async (tibars: number) => {
+    if (playerToken) {
+      await updatePlayerTibars(playerToken, tibars);
+      toggleTibarsInput();
+    }
   };
 
   return (
@@ -94,6 +111,20 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
             <h1 className="font-semibold text-sm md:text-base lg:text-xl">
               Home
             </h1>
+          </div>
+          <a onClick={() => toggleTibarsInput()}>
+            <Label hidden={showTibarsInput}>
+              Tibars: T$ {tibars.toFixed(2).replace(".", ",")}
+            </Label>
+          </a>
+          <div hidden={!showTibarsInput}>
+            <Input
+              type="number"
+              value={tibars}
+              min={0}
+              onChange={(e) => setTibars(Number(e.target.value))}
+              onBlur={() => changeTibars(tibars)}
+            />
           </div>
           <ComboToken value={playerToken} setValue={setPlayerToken} />
         </header>
