@@ -24,6 +24,7 @@ import { toast } from "@/components/ui/use-toast";
 
 export default function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+  const { playerToken, tibars } = usePlayerToken();
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -39,7 +40,6 @@ export default function ShopPage() {
   }, []);
 
   const buyItem = async (item: ShopItem) => {
-    const { playerToken, tibars } = usePlayerToken();
 
     const response = await buyShopItem(item, { id: playerToken, tibars: tibars });
     toast({
