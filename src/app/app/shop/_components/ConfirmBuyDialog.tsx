@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Dialog, DialogTrigger, DialogContent, DialogFooter, DialogClose, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { FiDollarSign } from "react-icons/fi";
+import { GiTwoCoins } from "react-icons/gi";
 
 type RemoveItemDialogProps = {
   onConfirm: () => void;
@@ -17,10 +17,10 @@ const ConfirmBuyDialog: React.FC<RemoveItemDialogProps> = ({ onConfirm }) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <button>
-          <FiDollarSign className="w-4 h-4 text-gray-200 hover:text-gray-400" />
-        </button>
+      <DialogTrigger>
+        <Button variant="outline">
+          <GiTwoCoins className="w-4 h-4 text-yellow-500 hover:text-yellow-400" />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogTitle>Comprar Item</DialogTitle>

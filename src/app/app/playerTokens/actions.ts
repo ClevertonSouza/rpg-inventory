@@ -86,3 +86,10 @@ export async function updatePlayerTibars(id: string, tibars: number) {
   }
 }
 
+export async function getPlayerTokenTibars(id: string) {
+  const token = await prisma.playerToken.findUnique({
+    where: { id },
+  });
+  return token?.tibars;
+}
+

@@ -8,23 +8,16 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { buyShopItem, getShopGeneralItems } from "./actions";
 import { ShopItem } from "@/common/types";
-import ConfirmBuyDialog from "./_components/ConfirmBuyDialog";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { toast } from "@/components/ui/use-toast";
+import { DataTableShopItems } from "./_components/DataTableShopItems";
+import { GiTwoCoins } from "react-icons/gi";
 
 export default function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
-  const { playerToken, tibars } = usePlayerToken();
+  const { playerToken, tibars, setTibars } = usePlayerToken();
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -40,12 +33,15 @@ export default function ShopPage() {
   }, []);
 
   const buyItem = async (item: ShopItem) => {
-
     const response = await buyShopItem(item, { id: playerToken, tibars: tibars });
     toast({
       description: response?.success ?? response?.error,
       variant: response?.success ? "default" : "destructive",
     });
+
+    if (response?.success) {
+      setTibars(response.tibars);
+    }
   }
 
   return (
@@ -54,34 +50,11 @@ export default function ShopPage() {
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-6">
           <Card className="flex flex-col">
             <CardHeader className="pb-4">
-              <CardTitle>Shop Items</CardTitle>
+              <CardTitle>General Items</CardTitle>
               <CardDescription>Items available for purchase</CardDescription>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>Item</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead>Weight</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {shopItems.map((item, index) => (
-                    <TableRow key={item.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{item.name}</TableCell>
-                      <TableCell>{item.price}</TableCell>
-                      <TableCell>{item.spaces}</TableCell>
-                      <TableCell>
-                        <ConfirmBuyDialog onConfirm={() => buyItem(item)} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <DataTableShopItems data={shopItems} />
             </CardContent>
           </Card>
         </main>

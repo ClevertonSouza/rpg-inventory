@@ -40,13 +40,13 @@ const ComboBox = ({ value, setValue, options }: { value: string, setValue: (valu
         >
           {value
             ? options.find((option) => option.value === value)?.label
-            : "Select token..."}
+            : "Select..."}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
         <Command>
-          <CommandInput placeholder="Search token..." />
+          <CommandInput placeholder="Search..." />
           <CommandEmpty>No token found.</CommandEmpty>
           <CommandGroup>
             <CommandList>

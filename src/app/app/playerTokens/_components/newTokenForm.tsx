@@ -24,7 +24,7 @@ const NewTokenForm = ({ onSubmit, handleSubmit, register, errors }: any) => {
           <div className="flex flex-row gap-4 flex-wrap">
             <div className="w-full">
               <Label htmlFor="tokenName" className="mt-4">
-                Nome do Item
+                Nome do Token
               </Label>
               <Input
                 id="tokenName"

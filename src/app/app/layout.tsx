@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { FiHome, FiLogOut, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
 import { GiSwordsPower } from "react-icons/gi";
 import { usePathname } from "next/navigation";
@@ -12,13 +12,24 @@ import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { signOut } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { updatePlayerTibars } from "./playerTokens/actions";
+import { getPlayerTokenTibars, updatePlayerTibars } from "./playerTokens/actions";
 
 const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const { playerToken, setPlayerToken, tibars, setTibars } = usePlayerToken();
   const [showTibarsInput, setShowTibarsInput] = useState(false);
+
+  useEffect(() => {
+    const fetchTibars = async () => {
+      if (playerToken) {
+        const tibars = await getPlayerTokenTibars(playerToken);
+        setTibars(Number(tibars));
+      }
+    };
+
+      fetchTibars();
+    }, [playerToken]);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
@@ -40,6 +51,17 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
       toggleTibarsInput();
     }
   };
+
+  const normalizeHeaderName = () => {
+    switch (pathname) {
+      case "/app/shop":
+        return "Shop Items";
+      case "/app/playerTokens":
+        return "Tokens";
+      default:
+        return "Dashboard";
+    }
+  }
 
   return (
     <div className="flex min-h-screen w-full">
@@ -109,7 +131,7 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
           </button>
           <div className="w-full flex-1">
             <h1 className="font-semibold text-sm md:text-base lg:text-xl">
-              Home
+              {normalizeHeaderName()}
             </h1>
           </div>
           <a onClick={() => toggleTibarsInput()}>
