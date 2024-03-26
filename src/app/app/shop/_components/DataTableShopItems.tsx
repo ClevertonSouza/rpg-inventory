@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
+  Row,
   SortingState,
   VisibilityState,
   flexRender,
@@ -33,19 +34,17 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import ConfirmBuyDialog from "./ConfirmBuyDialog"
-import { buyShopItem } from "../actions"
-import { usePlayerToken } from "@/contexts/UserTokensContext"
-import { ShopItem } from "@/common/types" 
+import { ShopItem } from "@/common/types"
+import ShopItemsDialog from "./ShopItemsDialog"
 
-export const DataTableShopItems = ({ data }: { data: ShopItem[] }) => {
+export const DataTableShopItems = ({ data, onBuyShopItem }: { data: ShopItem[], onBuyShopItem: (shopItem: ShopItem) => Promise<void> }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-  const { playerToken, tibars } = usePlayerToken();
 
   const handleBuy = (shopItem: ShopItem) => {
-    buyShopItem(shopItem, { id: playerToken, tibars })
+    onBuyShopItem(shopItem);
   }
 
   const columns: ColumnDef<ShopItem>[] = [
@@ -92,11 +91,29 @@ export const DataTableShopItems = ({ data }: { data: ShopItem[] }) => {
       cell: ({ row }) => <div className="lowercase">{row.getValue("spaces")}</div>,
     },
     {
+      accessorKey: "quantity",
+      header: "Quantidade",
+      cell: ({ row }) => {
+        const item = data.find(item => item?.id === row.original.id);
+        return <Input
+          className="w-16"
+          type="number"
+          value={item?.quantity}
+          defaultValue={1}
+          onChange={(e) => {
+            if (item) {
+              item.quantity = parseInt(e.target.value);
+            }
+          }}
+        />
+      },
+    },
+    {
       accessorKey: "price",
       header: "Preço",
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue("price"))
-        return <div className="text-left font-medium w-24">T$ {amount.toFixed(2).replace('.', ',')}</div>
+        const price = Number(row.getValue("price"));
+        return <div className="text-left font-medium w-24">T$ {price.toFixed(2).replace('.', ',')}</div>
       },
     },
     {
@@ -105,7 +122,10 @@ export const DataTableShopItems = ({ data }: { data: ShopItem[] }) => {
       enableHiding: false,
       cell: ({ row }) => {
         return (
-          <ConfirmBuyDialog onConfirm={() => handleBuy(row.original)} />
+          <div className="space-x-2">
+            <ConfirmBuyDialog onConfirm={() => handleBuy(row.original)} />
+            <ShopItemsDialog item={row.original} onConfirm={() => handleBuy(row.original)} />
+          </div>
         )
       },
     },
@@ -179,9 +199,9 @@ export const DataTableShopItems = ({ data }: { data: ShopItem[] }) => {
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   )
                 })}

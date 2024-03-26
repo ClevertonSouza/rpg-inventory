@@ -3,17 +3,20 @@
 import { ShopItem } from "@/common/types";
 import axios from "@/lib/api/axios-vercel";
 import prisma from "@/lib/database/database";
-
 export async function getShopGeneralItems() {
   try {
     const response = await axios.get('/itensGerais');
 
-    response.data.map((item: any) => {
+    const itemsWithFormattedPrice = response.data.map((item: any) => {
       const price = item.price.replace(',', '.').replace('T$', '');
-      return item.price = parseFloat(price);
+      item.price = parseFloat(price);
+      return item;
     });
+
+    const sortedItems = itemsWithFormattedPrice.sort((a: any, b: any) => a.name.localeCompare(b.name));
+
     return {
-      data: response.data,
+      data: sortedItems,
     }
   } catch (error) {
     console.log(error);
@@ -31,6 +34,8 @@ type TokenProps = {
 
 export async function buyShopItem(item: ShopItem, token: TokenProps) {
   try {
+    item.price = Number(item.price) * (Number(item.quantity) ?? 1);
+    item.spaces = Number(String(item.spaces).replace(',', '.')) * (Number(item.quantity) ?? 1);
     if (token.tibars < item.price) {
       return {
         error: "Not enough tibars",
@@ -42,45 +47,7 @@ export async function buyShopItem(item: ShopItem, token: TokenProps) {
         where: { id: token.id },
         data: { tibars: token.tibars - item.price },
       });
-
-      if ('damage' in item && 'critical' in item && 'range' in item) {
-        await prisma.item.create({
-          data: {
-            name: item.name,
-            price: item.price.toString(),
-            spaces: item.spaces.toString(),
-            quantity: item.quantity.toString(),
-            category: 'weapon',
-            tags: '',
-            playerTokenId: token.id,
-          },
-        });
-      } else if ('defenseBonus' in item && 'armorPenality' in item && 'proficiency' in item) {
-        await prisma.item.create({
-          data: {
-            name: item.name,
-            price: item.price.toString(),
-            spaces: item.spaces.toString(),
-            quantity: item.quantity.toString(),
-            category: 'armor',
-            tags: '',
-            playerTokenId: token.id,
-          },
-        });
-      } else {
-        await prisma.item.create({
-          data: {
-            name: item.name,
-            price: item.price.toString(),
-            spaces: item.spaces.toString(),
-            quantity: item.quantity?.toString() ?? '0',
-            category: 'general',
-            tags: '',
-            playerTokenId: token.id,
-          },
-        });
-      }
-        
+      await insertOrUpdateItem(item, token);
       return {
         success: "Item bought successfully",
         tibars: token.tibars - item.price,
@@ -95,6 +62,49 @@ export async function buyShopItem(item: ShopItem, token: TokenProps) {
     return {
       error: "Error buying item",
     }
+  }
+}
+
+async function insertOrUpdateItem(item: Omit<ShopItem, 'tags'>, token: TokenProps) {
+  let itemData = {
+    name: item.name,
+    price: item.price?.toString(),
+    spaces: item.spaces?.toString(),
+    quantity: item.quantity?.toString(),
+    category: 'general',
+    tags: '',
+    playerTokenId: token.id,
+  }
+
+  const itemExists = await prisma.item.findFirst({
+    where: {
+      name: item.name,
+      playerTokenId: token.id,
+    }
+  });
+
+  if (itemExists) {
+    itemData.quantity = String(Number(itemExists.quantity) + Number(item.quantity));
+    itemData.price = String(Number(itemExists.price) + Number(item.price));
+    itemData.spaces = String(Number(itemExists.spaces) + Number(item.spaces));
+    await prisma.item.update({
+      where: { id: itemExists.id },
+      data: itemData,
+    });
+  } else if ('damage' in item && 'critical' in item && 'range' in item) {
+    itemData.category = 'weapon';
+    await prisma.item.create({
+      data: itemData,
+    });
+  } else if ('defenseBonus' in item && 'armorPenality' in item && 'proficiency' in item) {
+    itemData.category = 'armor';
+    await prisma.item.create({
+      data: itemData,
+    });
+  } else {
+    await prisma.item.create({
+      data: itemData,
+    });
   }
 }
 

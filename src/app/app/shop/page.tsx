@@ -13,7 +13,6 @@ import { ShopItem } from "@/common/types";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { toast } from "@/components/ui/use-toast";
 import { DataTableShopItems } from "./_components/DataTableShopItems";
-import { GiTwoCoins } from "react-icons/gi";
 
 export default function ShopPage() {
   const [shopItems, setShopItems] = useState<ShopItem[]>([]);
@@ -54,7 +53,7 @@ export default function ShopPage() {
               <CardDescription>Items available for purchase</CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTableShopItems data={shopItems} />
+              <DataTableShopItems data={shopItems} onBuyShopItem={buyItem} />
             </CardContent>
           </Card>
         </main>
