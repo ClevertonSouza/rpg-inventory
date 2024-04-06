@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -36,6 +36,7 @@ import {
 import { ShopItem } from "@/common/types"
 import ShopItemsDialog from "./ShopItemsDialog"
 import { useShopItemsTable } from "@/contexts/ShopItemsTableContext"
+import QuantityInputCell from "./QuantityInputCell"
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -50,7 +51,7 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
   const [rowSelection, setRowSelection] = useState({});
   const { setSelectedGeneralItems, setSelectedWeaponItems, setSelectedArmorItems } = useShopItemsTable();
 
-  const columns: ColumnDef<ShopItem>[] = [
+  const columns = useMemo<ColumnDef<ShopItem>[]>(() => [
     {
       id: "select",
       header: ({ table }) => (
@@ -96,27 +97,8 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
     {
       accessorKey: "quantity",
       header: "Quantidade",
-      cell: ({ row: { index }, column: { id }, table, getValue }) => {
-        const [itemValue, setItemValue] = useState<number>(Number(getValue()));
-
-        const onBlur = () => {
-          table.options.meta?.updateData(index, id, itemValue);
-        }
-
-        useEffect(() => {
-          setItemValue(Number(getValue()));
-        }, [getValue]);
-
-        return <Input
-          className="w-16"
-          type="number"
-          value={itemValue}
-          defaultValue={1}
-          onBlur={onBlur}
-          onChange={(e) => {
-            setItemValue(Number(e.target.value));
-          }}
-        />
+      cell: ({ row, column, table }) => {
+        return <QuantityInputCell row={row} column={column} table={table} />
       },
     },
     {
@@ -139,7 +121,7 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
         )
       },
     },
-  ]
+  ], [])
 
   const table = useReactTable({
     data,
@@ -178,7 +160,7 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
     } else {
       setSelectedArmorItems(table.getSelectedRowModel().rows.map(row => row.original));
     }
-  }, [rowSelection, data]);
+  }, [rowSelection, data, id]);
 
 
   return (
