@@ -3,9 +3,15 @@
 import { ShopItem } from "@/common/types";
 import axios from "@/lib/api/axios-vercel";
 import prisma from "@/lib/database/database";
-export async function getShopGeneralItems() {
+
+type TokenProps = {
+  id: string;
+  tibars: number;
+}
+
+export async function getShopItems(category: 'itensGerais' | 'armas' | 'armor') {
   try {
-    const response = await axios.get('/itensGerais');
+    const response = await axios.get(`/${category}`);
 
     const itemsWithFormattedPrice = response.data.map((item: any) => {
       const price = item.price.replace(',', '.').replace('T$', '');
@@ -25,11 +31,6 @@ export async function getShopGeneralItems() {
   return {
     data: [],
   }
-}
-
-type TokenProps = {
-  id: string;
-  tibars: number;
 }
 
 export async function buyShopItem(item: ShopItem, token: TokenProps) {

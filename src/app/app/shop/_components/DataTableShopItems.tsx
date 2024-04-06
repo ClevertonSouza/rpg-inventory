@@ -1,10 +1,10 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
-  Row,
+  RowData,
   SortingState,
   VisibilityState,
   flexRender,
@@ -33,19 +33,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import ConfirmBuyDialog from "./ConfirmBuyDialog"
 import { ShopItem } from "@/common/types"
 import ShopItemsDialog from "./ShopItemsDialog"
+import { useShopItemsTable } from "@/contexts/ShopItemsTableContext"
 
-export const DataTableShopItems = ({ data, onBuyShopItem }: { data: ShopItem[], onBuyShopItem: (shopItem: ShopItem) => Promise<void> }) => {
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends RowData> {
+    updateData: (rowIndex: number, columnId: string, value: unknown) => void
+  }
+}
+
+export const DataTableShopItems = ({ id, data, setData }: { id: string, data: ShopItem[], setData: (data: ShopItem[]) => void, onBuyShopItem: (shopItem: ShopItem) => Promise<void> }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
-
-  const handleBuy = (shopItem: ShopItem) => {
-    onBuyShopItem(shopItem);
-  }
+  const { setSelectedGeneralItems, setSelectedWeaponItems, setSelectedArmorItems } = useShopItemsTable();
 
   const columns: ColumnDef<ShopItem>[] = [
     {
@@ -93,17 +96,25 @@ export const DataTableShopItems = ({ data, onBuyShopItem }: { data: ShopItem[], 
     {
       accessorKey: "quantity",
       header: "Quantidade",
-      cell: ({ row }) => {
-        const item = data.find(item => item?.id === row.original.id);
+      cell: ({ row: { index }, column: { id }, table, getValue }) => {
+        const [itemValue, setItemValue] = useState<number>(Number(getValue()));
+
+        const onBlur = () => {
+          table.options.meta?.updateData(index, id, itemValue);
+        }
+
+        useEffect(() => {
+          setItemValue(Number(getValue()));
+        }, [getValue]);
+
         return <Input
           className="w-16"
           type="number"
-          value={item?.quantity}
+          value={itemValue}
           defaultValue={1}
+          onBlur={onBlur}
           onChange={(e) => {
-            if (item) {
-              item.quantity = parseInt(e.target.value);
-            }
+            setItemValue(Number(e.target.value));
           }}
         />
       },
@@ -123,8 +134,7 @@ export const DataTableShopItems = ({ data, onBuyShopItem }: { data: ShopItem[], 
       cell: ({ row }) => {
         return (
           <div className="space-x-2">
-            <ConfirmBuyDialog onConfirm={() => handleBuy(row.original)} />
-            <ShopItemsDialog item={row.original} onConfirm={() => handleBuy(row.original)} />
+            <ShopItemsDialog item={row.original} />
           </div>
         )
       },
@@ -148,7 +158,28 @@ export const DataTableShopItems = ({ data, onBuyShopItem }: { data: ShopItem[], 
       columnVisibility,
       rowSelection,
     },
-  })
+    meta: {
+      updateData: (rowIndex, columnId, value) => {
+        const newData = [...data];
+        newData[rowIndex] = {
+          ...newData[rowIndex],
+          [columnId]: value,
+        }
+        setData(newData);
+      },
+    },
+  });
+
+  useEffect(() => {
+    if (id === "general") {
+      setSelectedGeneralItems(table.getSelectedRowModel().rows.map(row => row.original));
+    } else if (id === "weapons") {
+      setSelectedWeaponItems(table.getSelectedRowModel().rows.map(row => row.original));
+    } else {
+      setSelectedArmorItems(table.getSelectedRowModel().rows.map(row => row.original));
+    }
+  }, [rowSelection, data]);
+
 
   return (
     <div className="w-full">

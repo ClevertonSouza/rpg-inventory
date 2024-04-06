@@ -6,10 +6,9 @@ import { FiFileText } from "react-icons/fi";
 
 type ShopItemsDialogProps = {
   item: ShopItem;
-  onConfirm: () => void;
 };
 
-const ShopItemsDialog: React.FC<ShopItemsDialogProps> = ({ item, onConfirm }) => {
+const ShopItemsDialog: React.FC<ShopItemsDialogProps> = ({ item }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -29,9 +28,8 @@ const ShopItemsDialog: React.FC<ShopItemsDialogProps> = ({ item, onConfirm }) =>
         </div>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="outline">Cancelar</Button>
+            <Button variant="outline">Fechar</Button>
           </DialogClose>
-          <Button onClick={onConfirm}>Comprar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { SessionProvider } from "next-auth/react";
 
 import { PlayerTokenProvider } from '@/contexts/UserTokensContext';
+import { ShopItemsTableProvider } from "@/contexts/ShopItemsTableContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +25,9 @@ export default function RootLayout({
         <Toaster />
         <SessionProvider>
           <PlayerTokenProvider>
-            {children}
+            <ShopItemsTableProvider>
+              {children}
+            </ShopItemsTableProvider>
           </PlayerTokenProvider>
         </SessionProvider>
       </body>

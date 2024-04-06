@@ -8,21 +8,32 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { buyShopItem, getShopGeneralItems } from "./actions";
+import { buyShopItem, getShopItems } from "./actions";
 import { ShopItem } from "@/common/types";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { toast } from "@/components/ui/use-toast";
 import { DataTableShopItems } from "./_components/DataTableShopItems";
+import { useShopItemsTable } from "@/contexts/ShopItemsTableContext";
+import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function ShopPage() {
-  const [shopItems, setShopItems] = useState<ShopItem[]>([]);
+  const [generalShopItems, setGeneralShopItems] = useState<ShopItem[]>([]);
+  const [weaponsShopItems, setWeaponsShopItems] = useState<ShopItem[]>([]);
+  const [armorShopItems, setArmorShopItems] = useState<ShopItem[]>([]);
   const { playerToken, tibars, setTibars } = usePlayerToken();
+  const { selectedGeneralItems, selectedWeaponItems, selectedArmorItems } = useShopItemsTable();
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const { data } = await getShopGeneralItems();
-        setShopItems(data);
+        const [generalItems, weaponsItems, armorItems] = await Promise.all([
+          getShopItems('itensGerais'),
+          getShopItems('armas'),
+          getShopItems('armor'),
+        ]);
+        setGeneralShopItems(generalItems.data);
+        setWeaponsShopItems(weaponsItems.data);
+        setArmorShopItems(armorItems.data);
       } catch (error) {
         console.error("Erro ao buscar itens:", error);
       }
@@ -53,7 +64,74 @@ export default function ShopPage() {
               <CardDescription>Items available for purchase</CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTableShopItems data={shopItems} onBuyShopItem={buyItem} />
+              <DataTableShopItems id="general" data={generalShopItems} setData={setGeneralShopItems} onBuyShopItem={buyItem} />
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col">
+            <CardHeader className="pb-4">
+              <CardTitle>Weapons</CardTitle>
+              <CardDescription>Weapons available for purchase</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DataTableShopItems id="weapons" data={weaponsShopItems} setData={setWeaponsShopItems} onBuyShopItem={buyItem} />
+            </CardContent>
+          </Card>
+          <Card className="flex flex-col">
+            <CardHeader className="pb-4">
+              <CardTitle>Armor</CardTitle>
+              <CardDescription>Armor available for purchase</CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-4">
+              <DataTableShopItems id="armor" data={armorShopItems} setData={setArmorShopItems} onBuyShopItem={buyItem} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Selected Items</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Items</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Quantity</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {selectedGeneralItems && selectedGeneralItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell className="text-right">{item.price * item.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                  {selectedWeaponItems && selectedWeaponItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell className="text-right">{item.price * item.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                  {selectedArmorItems && selectedArmorItems.map((item) => (
+                    <TableRow key={item.id}>
+                      <TableCell className="font-medium">{item.name}</TableCell>
+                      <TableCell>{item.price}</TableCell>
+                      <TableCell>{item.quantity}</TableCell>
+                      <TableCell className="text-right">{item.price * item.quantity}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TableCell colSpan={3}>Total</TableCell>
+                    <TableCell className="text-right">$2,500.00</TableCell>
+                  </TableRow>
+                </TableFooter>
+              </Table>
             </CardContent>
           </Card>
         </main>
