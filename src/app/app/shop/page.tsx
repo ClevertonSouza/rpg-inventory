@@ -14,7 +14,10 @@ import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { toast } from "@/components/ui/use-toast";
 import { DataTableShopItems } from "./_components/DataTableShopItems";
 import { useShopItemsTable } from "@/contexts/ShopItemsTableContext";
-import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+import generalItemsColumns from "./_components/shopTableColumns/GeneralItemsColumns"
+import equipmentItemsColumns from "./_components/shopTableColumns/EquipmentsColumns"
 
 export default function ShopPage() {
   const [generalShopItems, setGeneralShopItems] = useState<ShopItem[]>([]);
@@ -64,25 +67,23 @@ export default function ShopPage() {
               <CardDescription>Items available for purchase</CardDescription>
             </CardHeader>
             <CardContent>
-              <DataTableShopItems id="general" data={generalShopItems} setData={setGeneralShopItems} onBuyShopItem={buyItem} />
+              <DataTableShopItems id="general" data={generalShopItems} setData={setGeneralShopItems} columns={generalItemsColumns} />
             </CardContent>
           </Card>
           <Card className="flex flex-col">
             <CardHeader className="pb-4">
-              <CardTitle>Weapons</CardTitle>
-              <CardDescription>Weapons available for purchase</CardDescription>
+              <CardTitle>Equipments</CardTitle>
+              <CardDescription>Equipments available for purchase</CardDescription>
             </CardHeader>
-            <CardContent>
-              <DataTableShopItems id="weapons" data={weaponsShopItems} setData={setWeaponsShopItems} onBuyShopItem={buyItem} />
-            </CardContent>
-          </Card>
-          <Card className="flex flex-col">
-            <CardHeader className="pb-4">
-              <CardTitle>Armor</CardTitle>
-              <CardDescription>Armor available for purchase</CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-4">
-              <DataTableShopItems id="armor" data={armorShopItems} setData={setArmorShopItems} onBuyShopItem={buyItem} />
+            <CardContent className="flex flex-row gap-4">
+              <div className="w-full">
+                <CardTitle>Weapons</CardTitle>
+                <DataTableShopItems id="weapons" data={weaponsShopItems} setData={setWeaponsShopItems} columns={equipmentItemsColumns} />
+              </div>
+              <div className="w-full">
+                <CardTitle>Armor</CardTitle>
+                <DataTableShopItems id="armor" data={armorShopItems} setData={setArmorShopItems} columns={equipmentItemsColumns} />
+              </div>
             </CardContent>
           </Card>
           <Card>

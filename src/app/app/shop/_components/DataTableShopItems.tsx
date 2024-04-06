@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useState } from "react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,10 +14,9 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown } from "lucide-react"
+import { ChevronDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -34,9 +33,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { ShopItem } from "@/common/types"
-import ShopItemsDialog from "./ShopItemsDialog"
 import { useShopItemsTable } from "@/contexts/ShopItemsTableContext"
-import QuantityInputCell from "./QuantityInputCell"
 
 declare module '@tanstack/react-table' {
   interface TableMeta<TData extends RowData> {
@@ -44,84 +41,25 @@ declare module '@tanstack/react-table' {
   }
 }
 
-export const DataTableShopItems = ({ id, data, setData }: { id: string, data: ShopItem[], setData: (data: ShopItem[]) => void, onBuyShopItem: (shopItem: ShopItem) => Promise<void> }) => {
+type DataTableShopItemsProps = {
+  id: string,
+  data: ShopItem[],
+  setData: (data: ShopItem[]) => void,
+  columns: ColumnDef<ShopItem>[]
+  className?: string
+}
+
+export const DataTableShopItems = ({ id, data, setData, columns, className }: DataTableShopItemsProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const { setSelectedGeneralItems, setSelectedWeaponItems, setSelectedArmorItems } = useShopItemsTable();
 
-  const columns = useMemo<ColumnDef<ShopItem>[]>(() => [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "name",
-      header: ({ column }) => (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Nome
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
-      ),
-    },
-    {
-      accessorKey: "spaces",
-      header: "Espaço",
-      cell: ({ row }) => <div className="lowercase">{row.getValue("spaces")}</div>,
-    },
-    {
-      accessorKey: "quantity",
-      header: "Quantidade",
-      cell: ({ row, column, table }) => {
-        return <QuantityInputCell row={row} column={column} table={table} />
-      },
-    },
-    {
-      accessorKey: "price",
-      header: "Preço",
-      cell: ({ row }) => {
-        const price = Number(row.getValue("price"));
-        return <div className="text-left font-medium w-24">T$ {price.toFixed(2).replace('.', ',')}</div>
-      },
-    },
-    {
-      id: "actions",
-      header: "Ações",
-      enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <div className="space-x-2">
-            <ShopItemsDialog item={row.original} />
-          </div>
-        )
-      },
-    },
-  ], [])
+  const [pagination, setPagination] = useState({
+    pageIndex: 0, //initial page index
+    pageSize: 5, //default page size
+  });
 
   const table = useReactTable({
     data,
@@ -139,6 +77,7 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination,
     },
     meta: {
       updateData: (rowIndex, columnId, value) => {
@@ -164,7 +103,7 @@ export const DataTableShopItems = ({ id, data, setData }: { id: string, data: Sh
 
 
   return (
-    <div className="w-full">
+    <div className={className}>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filter names..."

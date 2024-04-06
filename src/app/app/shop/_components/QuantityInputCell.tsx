@@ -1,9 +1,11 @@
 'use client'
 
+import { ShopItem } from "@/common/types";
 import { Input } from "@/components/ui/input";
+import { Column, Row, Table } from "@tanstack/react-table";
 import { useEffect, useState } from "react";
 
-const QuantityInputCell = ({ row, column, table }: { row: any, column: any, table: any }) => {
+const QuantityInputCell = ({ row, column, table }: { row: Row<ShopItem>, column: Column<ShopItem, unknown>, table: Table<ShopItem> }) => {
   const initialValue = Number(row.getValue(column.id));
   const [itemValue, setItemValue] = useState(initialValue);
 
