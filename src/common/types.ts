@@ -11,6 +11,8 @@ export type Weapons = {
   properties: string;
   grip: string;
   quantity: number;
+  type: ArmorTypes;
+  upgrades?: string[];
 };
 
 export type GeneralItems = {
@@ -31,7 +33,11 @@ export type Armor = {
   spaces: number;
   proficiency: string;
   quantity: number;
+  type: 'light' | 'heavy' | 'shield';
+  upgrades?: string[];
 };
+
+type ArmorTypes = 'weapon' | 'esoteric';
 
 export type ShopItem = Weapons | GeneralItems | Armor;
 
@@ -43,3 +49,8 @@ export type PlayerToken = {
 };
  
 export type ItemCategory = "weapons" | "general" | "armor";
+
+export type Improvement = {
+  name: string;
+  effect: string;
+}

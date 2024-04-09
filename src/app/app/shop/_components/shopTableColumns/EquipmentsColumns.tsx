@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 import ShopItemsDialog from "../ShopItemsDialog";
-import CardDetailsEquipments from "../CardDetailsEquipments";
+import CardDetailsEquipments from "../CardDetailsEquipmets/CardDetailsEquipments";
 
 const columns: ColumnDef<ShopItem>[] = [
   {
