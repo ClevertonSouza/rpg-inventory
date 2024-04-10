@@ -22,3 +22,24 @@ export const downloadFile = ({
   a.dispatchEvent(clickEvt);
   a.remove();
 };
+
+
+export const resolveMaterialsName = (material: string) => {
+  switch (material) {
+    case 'ice':
+      return 'Gelo eterno';
+    case 'ruby':
+      return 'Aço rubi';
+    case 'adamant':
+      return 'Adamante';
+    case 'wood':
+      return 'Madeira tollon';
+    case 'mithril':
+      return 'Mithril';
+    case 'red':
+      return 'Matéria vermelha';
+    default:
+      return 'Nenhum material';
+  }
+};
+

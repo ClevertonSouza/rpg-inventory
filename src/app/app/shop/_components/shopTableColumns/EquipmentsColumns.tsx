@@ -1,11 +1,10 @@
 'use client'
 
-import { ShopItem } from "@/common/types";
+import { Armor, ShopItem, Weapons } from "@/common/types";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import ShopItemsDialog from "../ShopItemsDialog";
 import CardDetailsEquipments from "../CardDetailsEquipmets/CardDetailsEquipments";
 
 const columns: ColumnDef<ShopItem>[] = [
@@ -53,20 +52,28 @@ const columns: ColumnDef<ShopItem>[] = [
   },
   {
     accessorKey: "price",
-    header: "Preço",
+    header: "Preço do item",
     cell: ({ row }) => {
       const price = Number(row.getValue("price"));
       return <div className="text-left font-medium w-24">T$ {price.toFixed(2).replace('.', ',')}</div>
     },
   },
   {
+    accessorKey: "totalPrice",
+    header: "Preço Total",
+    cell: ({ row }) => {
+      const price = Number(row.getValue("totalPrice"));
+      return price > 0 ? <div className="text-left font-medium w-24">T$ {price.toFixed(2).replace('.', ',')}</div> : "—"
+    },
+  },
+  {
     id: "actions",
     header: "Ações",
     enableHiding: false,
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       return (
         <div className="space-x-2">
-          <CardDetailsEquipments item={row.original} />
+          <CardDetailsEquipments item={row.original} row={row} table={table} />
         </div>
       )
     },

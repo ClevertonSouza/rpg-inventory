@@ -2,6 +2,7 @@ export type Weapons = {
   id: string;
   name: string;
   price: number;
+  totalPrice: number;
   damage: string;
   critical: number;
   range: string;
@@ -28,6 +29,7 @@ export type Armor = {
   id: string;
   name: string;
   price: number;
+  totalPrice: number;
   defenseBonus: string;
   armorPenality: string;
   spaces: number;

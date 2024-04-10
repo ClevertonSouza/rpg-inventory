@@ -32,7 +32,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ShopItem } from "@/common/types"
+import { Armor, GeneralItems, ShopItem, Weapons } from "@/common/types"
 import { useShopItemsTable } from "@/contexts/ShopItemsTableContext"
 
 declare module '@tanstack/react-table' {

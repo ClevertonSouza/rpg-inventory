@@ -11,9 +11,13 @@ import { Separator } from "@/components/ui/separator";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { getImprovements } from "./actions";
 import { toast } from "@/components/ui/use-toast";
+import { Row, Table } from "@tanstack/react-table";
+import { resolveMaterialsName } from "@/common/helpers";
 
 type ItemDialogProps = {
   item: ShopItem;
+  row: Row<ShopItem>;
+  table: Table<ShopItem>;
 };
 
 type MaterialType = 'none' | 'ruby' | 'adamant' | 'ice' | 'wood' | 'red' | 'mithril';
@@ -71,7 +75,7 @@ const materialPrices: Record<MaterialType, Record<ItemType, number | null>> = {
   }
 };
 
-const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
+const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item, row, table }) => {
   const [generalImprovements, setGeneralImprovements] = useState<Improvement[]>([]);
   const [materials, setMaterials] = useState<MaterialType>('none');
   const [upgrades, setUpgrades] = useState<string[]>([]);
@@ -121,7 +125,7 @@ const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
     }
   }
 
-  const calculateImprovementsPrice = (item: ShopItem) => {
+  const calculateImprovementsPrice = (item: ItemDialogProps['item']) => {
     let materialPrice = 0;
     let itemType: ItemType = 'esoteric'; // Valor inicial padrão, ajuste conforme necessário
     if ('damage' in item) {
@@ -131,10 +135,10 @@ const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
     } else {
       itemType = 'esoteric';
     }
-  
+
     materialPrice = materialPrices[materials][itemType] || 0;
 
-    switch (upgrades.length) {
+    switch (upgrades.length + (materials !== 'none' ? 1 : 0)) {
       case 1:
         return materialPrice + 300;
       case 2:
@@ -146,6 +150,17 @@ const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
       default:
         return materialPrice;
     }
+  } 
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if ('damage' in item || 'defenseBonus' in item) {
+      item.upgrades = upgrades.concat(resolveMaterialsName(materials));
+      item.totalPrice = calculateImprovementsPrice(item) + item.price;
+    }
+    if (row.getIsSelected() && 'totalPrice' in item) {
+      table.options.meta?.updateData(row.index, 'totalPrice', item.totalPrice);
+    }
   }
 
   return (
@@ -156,7 +171,7 @@ const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mx-auto w-full max-w-lg space-y-4">
             <DrawerHeader className="flex justify-center">
               <DrawerTitle>{item.name}</DrawerTitle>
@@ -214,16 +229,15 @@ const CardDetailsEquipments: React.FC<ItemDialogProps> = ({ item }) => {
                   </CardContent>
                 </Card>
                 <div className="flex flex-col mt-4 space-y-4">
-                  <Label>Preço do item: T$ {item.price.toFixed(2)}</Label>
-                  <Label>Preço das melhorias: T$ {calculateImprovementsPrice(item).toFixed(2)}</Label>
-                  <Label>Preço total: T$ {(item.price + calculateImprovementsPrice(item)).toFixed(2)}</Label>
+                  <Label>Preço do item: T$ {item.price.toFixed(2).replace('.', ',')}</Label>
+                  <Label>Preço das melhorias: T$ {calculateImprovementsPrice(item).toFixed(2).replace('.', ',')}</Label>
+                  <Label>Preço total: T$ {(item.price + calculateImprovementsPrice(item)).toFixed(2).replace('.', ',')}</Label>
                 </div>
               </div>
             </div>
             <DrawerFooter>
-              <Button>Submit</Button>
               <DrawerClose asChild>
-                <Button variant="outline">Cancel</Button>
+                <Button type="submit">Salvar</Button>
               </DrawerClose>
             </DrawerFooter>
           </div>
