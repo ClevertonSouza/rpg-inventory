@@ -50,7 +50,7 @@ const ComboToken = ({ value, setValue }: ComboTokenProps) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between bg-gray-900/40"
         >
           {value
             ? tokens.find((token) => token.id === value)?.token

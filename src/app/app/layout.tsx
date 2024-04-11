@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import React, { PropsWithChildren, useEffect, useState } from "react";
-import { FiHome, FiLogOut, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
+import { FiBox, FiHome, FiLogOut, FiMenu, FiPackage, FiShoppingCart, FiX } from "react-icons/fi";
 import { GiSwordsPower } from "react-icons/gi";
 import { usePathname } from "next/navigation";
 import SidebarLink from "@/app/app/_components/SidebarLink";
@@ -13,6 +13,8 @@ import { signOut } from "next-auth/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { getPlayerTokenTibars, updatePlayerTibars } from "./playerTokens/actions";
+import { cn } from "@/lib/utils";
+import { Separator } from "@/components/ui/separator";
 
 const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const pathname = usePathname();
@@ -55,41 +57,48 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
   const normalizeHeaderName = () => {
     switch (pathname) {
       case "/app/shop":
-        return "Shop Items";
+        return "Loja";
       case "/app/playerTokens":
         return "Tokens";
       default:
-        return "Dashboard";
+        return "Inventário";
     }
   }
 
   return (
     <div className="flex min-h-screen w-full">
       <div
-        className={`relative ${isDrawerOpen ? "block" : "hidden"} border-r bg-gray-100/40 lg:block dark:bg-gray-800/40 flex flex-col `}
+        className={`${isDrawerOpen ? "fixed" : "hidden"} border-r flex flex-col`}
       >
-        <button
-          className="absolute top-0 right-0 m-4 text-gray-800 dark:text-gray-200"
-          onClick={toggleDrawer}
-        >
-          <FiX className="h-6 w-6" />
-        </button>
         <div
-          className={`${isDrawerOpen ? "block" : "hidden"} flex h-full min-h-screen flex-col gap-2 flex-end`}
+          className={cn(
+            `flex fixed h-[100vh] min-h-screen flex-col gap-2 flex-end bg-gray-100/40 dark:bg-gray-800/40 border-r w-[20rem]`,
+            isDrawerOpen ? "fixed" : "hidden"
+          )}
         >
-          <div className="flex h-[60px] items-center border-b px-6">
-            <Link className="flex items-center gap-2 font-semibold" href="#">
+          <div className="flex h-[60px] items-center border-b px-6 justify-between bg-gray-100 dark:bg-gray-800 border-r border-gray-100/40 dark:border-gray-700/40">
+            <Link className="flex items-center gap-2 font-semibold text-sm md:text-base lg:text-xl" href="#">
               <FiPackage className="h-6 w-6" />
-              <span className="w-56">RPG inventory</span>
+              <span>RPG inventory</span>
             </Link>
+            <button
+              className="text-gray-800 dark:text-gray-200"
+              onClick={toggleDrawer}
+            >
+              <FiX className="h-6 w-6" />
+            </button>
           </div>
           <div className="flex-1 overflow-auto py-2">
             <nav className="grid items-start px-4 text-sm font-medium gap-2">
+              <div className="mx-4 text-sm text-gray-600 dark:text-gray-400 flex flex-col gap-2 mt-2">
+                <Label>Personagem</Label>
+                <Separator />
+              </div>
               <SidebarLink
                 path={{
                   href: "/app/dashboard",
-                  icon: FiHome,
-                  label: "Dashboard",
+                  icon: FiPackage,
+                  label: "Inventário",
                 }}
                 active={isActive("/app/dashboard")}
               />
@@ -97,10 +106,14 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
                 path={{
                   href: "/app/shop",
                   icon: FiShoppingCart,
-                  label: "Store",
+                  label: "Loja",
                 }}
                 active={isActive("/app/shop")}
               />
+              <div className="mx-4 text-sm text-gray-600 dark:text-gray-400 flex flex-col gap-2 mt-2">
+                <Label>Jogador</Label>
+                <Separator />
+              </div>
               <SidebarLink
                 path={{
                   href: "/app/playerTokens",
@@ -111,18 +124,32 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
               />
             </nav>
           </div>
-          <footer className="flex items-center justify-center justify-between h-14 lg:h-[60px] border-t bg-gray-100/40 px-6 dark:bg-gray-800/40">
-            <p className="text-sm font-medium">© 2024 RPG Inventory</p>
-            <button onClick={() => signOut()} className="text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"><FiLogOut className="h-6 w-6" /></button>
-          </footer>
+          <div className="mx-4 text-sm text-gray-600 dark:text-gray-400 flex flex-col gap-2">
+            <Separator />
+          </div>
+          <div className="flex flex-col gap-2 m-4">
+            <a onClick={() => toggleTibarsInput()}>
+              <Label hidden={showTibarsInput}>
+                Tibars: T$ {tibars.toFixed(2).replace(".", ",")}
+              </Label>
+            </a>
+            <div hidden={!showTibarsInput}>
+              <Input
+                type="number"
+                value={tibars}
+                min={0}
+                onChange={(e) => setTibars(Number(e.target.value))}
+                onBlur={() => changeTibars(tibars)}
+              />
+            </div>
+            <ComboToken value={playerToken} setValue={setPlayerToken} />
+          </div>
         </div>
       </div>
       <div className="flex flex-col w-full">
-        <header className="flex h-14 lg:h-[60px] items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-          <Link className="lg:hidden" href="#">
-            <FiPackage className="h-6 w-6" />
-            <span className="sr-only">Home</span>
-          </Link>
+        <header className={cn("flex fixed h-[60px] items-center gap-4 border bg-gray-100 px-6 dark:bg-gray-800 z-10 border-b-gray-700",
+          isDrawerOpen ? "left-[20rem] right-0" : "w-full"
+        )}>
           <button
             className={`relative ${isDrawerOpen ? "hidden" : "block"} text-gray-800 dark:text-gray-200`}
             onClick={toggleDrawer}
@@ -134,23 +161,11 @@ const Layout: React.FC = ({ children }: PropsWithChildren) => {
               {normalizeHeaderName()}
             </h1>
           </div>
-          <a onClick={() => toggleTibarsInput()}>
-            <Label hidden={showTibarsInput}>
-              Tibars: T$ {tibars.toFixed(2).replace(".", ",")}
-            </Label>
-          </a>
-          <div hidden={!showTibarsInput}>
-            <Input
-              type="number"
-              value={tibars}
-              min={0}
-              onChange={(e) => setTibars(Number(e.target.value))}
-              onBlur={() => changeTibars(tibars)}
-            />
-          </div>
-          <ComboToken value={playerToken} setValue={setPlayerToken} />
+          <button onClick={() => signOut()} className="text-gray-800 dark:text-gray-200 hover:text-gray-600 dark:hover:text-gray-400"><FiLogOut className="h-6 w-6" /></button>
         </header>
-        {children}
+        <div className={cn("mt-14", isDrawerOpen ? "ml-[20rem]" : "ml-0")}>
+          {children}
+        </div>
       </div>
     </div>
   );

@@ -101,7 +101,7 @@ export default function ShopPage() {
               <CardTitle>Equipments</CardTitle>
               <CardDescription>Equipments available for purchase</CardDescription>
             </CardHeader>
-            <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-1 lg:grid-cols-2">
+            <CardContent className="grid grid-cols-1 gap-4 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2">
               <div className="w-full">
                 <CardTitle>Weapons</CardTitle>
                 <DataTableShopItems id="weapons" data={weaponsShopItems} setData={setWeaponsShopItems} columns={equipmentItemsColumns} />
