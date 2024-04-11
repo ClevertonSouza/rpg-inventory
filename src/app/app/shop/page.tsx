@@ -47,14 +47,14 @@ export default function ShopPage() {
     fetchItems();
   }, []);
 
-  const buyItem = async (item: ShopItem) => {
-    const response = await buyShopItem(item, { id: playerToken, tibars: tibars });
+  const buyItems = async () => {
+    const response = await buyShopItem([...selectedGeneralItems, ...selectedWeaponItems, ...selectedArmorItems], { id: playerToken, tibars: tibars });
     toast({
       description: response?.success ?? response?.error,
       variant: response?.success ? "default" : "destructive",
     });
 
-    if (response?.success) {
+    if (response?.tibars) {
       setTibars(response.tibars);
     }
   }
@@ -101,7 +101,7 @@ export default function ShopPage() {
               <CardTitle>Equipments</CardTitle>
               <CardDescription>Equipments available for purchase</CardDescription>
             </CardHeader>
-            <CardContent className="flex flex-row gap-4">
+            <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-1 lg:grid-cols-2">
               <div className="w-full">
                 <CardTitle>Weapons</CardTitle>
                 <DataTableShopItems id="weapons" data={weaponsShopItems} setData={setWeaponsShopItems} columns={equipmentItemsColumns} />
@@ -182,7 +182,7 @@ export default function ShopPage() {
               <div className="fixed bottom-6 right-6">
                 <Button disabled={tibars < calculateTotalPrice()} className={cn("",
                   tibars >= calculateTotalPrice() ? "bg-green-500" : "bg-red-500"
-                )}>Comprar</Button>
+                )} onClick={buyItems}>Comprar</Button>
               </div>
             </CardContent>
           </Card>

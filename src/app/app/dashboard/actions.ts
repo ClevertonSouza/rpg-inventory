@@ -59,3 +59,14 @@ export async function deleteItem(id: string) {
     console.log(error);
   }
 }
+
+export async function updateItemQuantity(id: string, quantity: string) {
+  try {
+    await prisma.item.update({
+      where: { id },
+      data: { quantity },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}

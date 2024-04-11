@@ -25,7 +25,9 @@ import { Item } from "@prisma/client";
 import { toast } from "@/components/ui/use-toast";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
 import { FiTrash2 } from "react-icons/fi";
-import RemoveItemDialog from "../../../components/shared/RemoveItemDialog";
+import RemoveItemDialog from "./_components/RemoveItemDialog";
+import { Input } from "@/components/ui/input";
+import QuantityDashboardInputCell from "./_components/QuantityDashboardInputCell";
 
 export default function Dashboard() {
   const [weaponsList, setWeaponsList] = useState<Item[]>([] as Item[]);
@@ -195,8 +197,10 @@ export default function Dashboard() {
                                   : "0,00")}
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
-                            <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center gap-2">
+                            <TableCell>
+                              <QuantityDashboardInputCell item={item} />
+                            </TableCell>
+                            <TableCell className="flex items-center gap-2">
                               <ItemDialog item={item} />
                               <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>
@@ -237,7 +241,7 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center gap-2">
+                            <TableCell className="flex items-center gap-2">
                               <ItemDialog item={item} />
                               <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>
@@ -278,7 +282,7 @@ export default function Dashboard() {
                             </TableCell>
                             <TableCell>{item.spaces}</TableCell>
                             <TableCell>{item.quantity}</TableCell>
-                            <TableCell className="flex justify-center items-center gap-2">
+                            <TableCell className="flex items-center gap-2">
                               <ItemDialog item={item} />
                               <RemoveItemDialog onConfirm={() => handleDeleteItem(item)} />
                             </TableCell>

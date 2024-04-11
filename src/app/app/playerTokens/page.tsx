@@ -25,7 +25,7 @@ import NewTokenForm from "@/app/app/playerTokens/_components/newTokenForm";
 import { useToast } from "@/components/ui/use-toast";
 import { createPlayerToken, deletePlayerToken, listAllPlayerTokens } from "./actions";
 import { usePlayerToken } from "@/contexts/UserTokensContext";
-import RemoveItemDialog from "@/components/shared/RemoveItemDialog";
+import RemoveItemDialog from "@/app/app/dashboard/_components/RemoveItemDialog";
 
 
 export default function PlayerTokens() {

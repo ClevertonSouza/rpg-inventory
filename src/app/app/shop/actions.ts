@@ -33,47 +33,51 @@ export async function getShopItems(category: 'itensGerais' | 'armas' | 'armor') 
   }
 }
 
-export async function buyShopItem(item: ShopItem, token: TokenProps) {
-  try {
-    item.price = Number(item.price) * (Number(item.quantity) ?? 1);
-    item.spaces = Number(String(item.spaces).replace(',', '.')) * (Number(item.quantity) ?? 1);
-    if (token.tibars < item.price) {
-      return {
-        error: "Not enough tibars",
-      }
-    }
+export async function buyShopItem(selectedItems: ShopItem[], token: TokenProps): Promise<{ success?: string, error?: string, tibars?: number }> {
+  const totalPrice = selectedItems.reduce((total, item) => {
+    const price = Number(item.price) * (Number(item.quantity) ?? 1);
+    const spaces = Number(String(item.spaces).replace(',', '.')) * (Number(item.quantity) ?? 1);
+    return total + price + spaces;
+  }, 0);
 
-    try {
+  if (token.tibars < totalPrice) {
+    return {
+      error: "Você não possui tibares suficientes",
+    }
+  }
+
+  try {
+    await Promise.all(selectedItems.map(async (item) => {
+      item.price = Number(item.price) * (Number(item.quantity) ?? 1);
+      item.spaces = Number(String(item.spaces).replace(',', '.')) * (Number(item.quantity) ?? 1);
+
       await prisma.playerToken.update({
         where: { id: token.id },
         data: { tibars: token.tibars - item.price },
       });
       await insertOrUpdateItem(item, token);
-      return {
-        success: "Item bought successfully",
-        tibars: token.tibars - item.price,
-      }
-    } catch (error) {
-      return {
-        error: "Error buying item",
-      }
+    }));
+    return {
+      success: "Itens comprados com sucesso!",
+      tibars: token.tibars - totalPrice,
     }
-
   } catch (error) {
     return {
-      error: "Error buying item",
+      error: "Erro ao comprar itens",
     }
   }
 }
 
 async function insertOrUpdateItem(item: Omit<ShopItem, 'tags'>, token: TokenProps) {
+  const itemPrice = 'totalPrice' in item ? Number(item.totalPrice) : 'price' in item ? Number(item.price) : 0;
+  const tags = 'upgrades' in item ? String(item.upgrades) : '';
   let itemData = {
     name: item.name,
-    price: item.price?.toString(),
+    price: itemPrice?.toString(),
     spaces: item.spaces?.toString(),
     quantity: item.quantity?.toString(),
     category: 'general',
-    tags: '',
+    tags: tags,
     playerTokenId: token.id,
   }
 
@@ -84,20 +88,20 @@ async function insertOrUpdateItem(item: Omit<ShopItem, 'tags'>, token: TokenProp
     }
   });
 
-  if (itemExists) {
+  if (itemExists && !('totalPrice' in item)) {
     itemData.quantity = String(Number(itemExists.quantity) + Number(item.quantity));
-    itemData.price = String(Number(itemExists.price) + Number(item.price));
+    itemData.price = String(Number(itemExists.price) + itemPrice);
     itemData.spaces = String(Number(itemExists.spaces) + Number(item.spaces));
     await prisma.item.update({
       where: { id: itemExists.id },
       data: itemData,
     });
-  } else if ('damage' in item && 'critical' in item && 'range' in item) {
-    itemData.category = 'weapon';
+  } else if ('damage' in item) {
+    itemData.category = 'weapons';
     await prisma.item.create({
       data: itemData,
     });
-  } else if ('defenseBonus' in item && 'armorPenality' in item && 'proficiency' in item) {
+  } else if ('defenseBonus' in item) {
     itemData.category = 'armor';
     await prisma.item.create({
       data: itemData,

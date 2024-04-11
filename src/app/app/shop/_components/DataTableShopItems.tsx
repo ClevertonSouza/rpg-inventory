@@ -72,6 +72,7 @@ export const DataTableShopItems = ({ id, data, setData, columns, className }: Da
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
     state: {
       sorting,
       columnFilters,

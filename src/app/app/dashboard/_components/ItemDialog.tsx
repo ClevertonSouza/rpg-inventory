@@ -20,9 +20,9 @@ const ItemDialog: React.FC<ItemDialogProps> = ({ item }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50">
-          <FiFileText className="h-4 w-4" />
-        </button>
+        <Button variant="outline" className="hover:text-white">
+          <FiFileText className="w-4 h-4 text-gray-500" />
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -39,6 +39,7 @@ const ItemDialog: React.FC<ItemDialogProps> = ({ item }) => {
           </p>
           <p>Espaços: {item.spaces}</p>
           <p>Quantidade: {item.quantity}</p>
+          <p>Tags: {item.tags}</p>
         </div>
         <DialogFooter>
           <DialogClose asChild>
